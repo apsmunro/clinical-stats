@@ -4,7 +4,18 @@ import { ModuleLayout, isModuleDone } from './components/ModuleLayout'
 import { moduleBySlug, modules } from './content/modules'
 import { useTheme } from './theme/ThemeContext'
 
-/** Ghosted bell-curve + plot-grid motif for the ink hero (≤6% opacity). */
+/** SVG path for a normal curve sitting on `base`, peaking `height` px above it. */
+function normalPath(mean: number, sd: number, height: number, base: number, x0: number, x1: number) {
+  const pts: string[] = []
+  for (let i = 0; i <= 80; i++) {
+    const x = x0 + ((x1 - x0) * i) / 80
+    const y = base - height * Math.exp(-0.5 * ((x - mean) / sd) ** 2)
+    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`)
+  }
+  return `M${pts.join(' L')}`
+}
+
+/** Ghosted null-vs-effect curves (the logo's motif) + plot grid for the ink hero (≤7% opacity). */
 function HeroMotif() {
   return (
     <svg className="hero__motif" viewBox="0 0 900 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
@@ -16,13 +27,10 @@ function HeroMotif() {
           <line key={x} x1={x} x2={x} y1="0" y2="360" />
         ))}
       </g>
-      <path
-        d="M40,340 C240,340 300,330 380,180 C430,80 440,40 450,40 C460,40 470,80 520,180 C600,330 660,340 860,340"
-        fill="none"
-        stroke="#FFFFFF"
-        strokeWidth="2.5"
-        opacity="0.07"
-      />
+      <g fill="none" stroke="#FFFFFF" strokeWidth="2.5" opacity="0.07">
+        <path d={normalPath(370, 95, 280, 340, 40, 760)} />
+        <path d={normalPath(530, 95, 280, 340, 200, 860)} />
+      </g>
     </svg>
   )
 }
@@ -230,10 +238,12 @@ export default function App() {
         Skip to content
       </a>
       <header className="app__header">
-        <Link to="/" className="app__brand" aria-label="REP Clinical Statistics — home">
+        <Link to="/" className="app__brand" aria-label="Research Education Program: Clinical Statistics, home">
           <img className="app__brand-logo" src="./brand/glyph.svg" alt="" aria-hidden="true" />
-          <span className="app__brand-name">REP</span>
-          <span className="app__brand-desc">Clinical Statistics</span>
+          <span className="app__brand-text">
+            <span className="app__brand-org">Research Education Program</span>
+            <span className="app__brand-name">Clinical Statistics</span>
+          </span>
         </Link>
         <div className="app__header-actions">
           <button
@@ -283,7 +293,7 @@ export default function App() {
         </main>
       </div>
       <footer className="app__footer">
-        REP · Research Education Program — Clinical Statistics. Concept-first, code-optional. All
+        Research Education Program — Clinical Statistics. Concept-first, code-optional. All
         trials simulated; no actual Snakeoilizumab was harmed.
       </footer>
     </div>

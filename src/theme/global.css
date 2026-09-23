@@ -110,32 +110,44 @@ pre {
 
 .app__brand {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--s-3);
+  min-width: 0;
   text-decoration: none;
 }
 .app__brand-logo {
-  height: 2.1rem;
+  height: 2.25rem;
   width: auto;
-  align-self: center;
+  flex: none;
+}
+/* two-line lockup: programme above, strand name below */
+.app__brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.app__brand-org {
+  font-weight: 600;
+  font-size: 0.66rem;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 .app__brand-name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.45rem;
-  letter-spacing: -0.02em;
+  font-size: 1.3rem;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
   color: var(--text);
-}
-.app__brand-desc {
-  font-weight: 500;
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .app__header-actions {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: var(--s-2);
 }
@@ -161,6 +173,7 @@ pre {
 
 .app__header .app__nav-toggle {
   display: none;
+  white-space: nowrap;
 }
 
 .app__body {
@@ -1614,12 +1627,33 @@ figure {
 }
 
 @media (max-width: 26rem) {
-  /* phones: the full brand lockup + actions overflow, so drop the subtitle */
+  /* phones: keep both lines of the lockup, just smaller (fits down to 360px wide) */
   .app__header {
+    gap: var(--s-2);
     padding: var(--s-3) var(--s-3);
   }
-  .app__brand-desc {
-    display: none;
+  .app__brand {
+    gap: var(--s-2);
+  }
+  .app__brand-logo {
+    height: 1.75rem;
+  }
+  .app__brand-text {
+    flex: none;
+  }
+  .app__brand-org {
+    font-size: 0.53rem;
+    letter-spacing: 0.02em;
+  }
+  .app__brand-name {
+    font-size: 1.05rem;
+  }
+  .app__header .app__nav-toggle {
+    padding-inline: var(--s-3);
+  }
+  .theme-toggle {
+    width: 2.1rem;
+    height: 2.1rem;
   }
 }
 

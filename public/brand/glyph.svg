@@ -1,26 +1,22 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statera mark">
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Research Education Program: Clinical Statistics mark">
   <defs>
     <linearGradient id="ink" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#0F1830"/>
       <stop offset="1" stop-color="#0A0F1E"/>
     </linearGradient>
-    <linearGradient id="curve" x1="20" y1="40" x2="108" y2="96" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#5B7CFF"/>
-      <stop offset="1" stop-color="#2BD4C0"/>
-    </linearGradient>
   </defs>
   <rect width="128" height="128" rx="30" fill="url(#ink)"/>
-  <!-- faint grid -->
-  <g stroke="#FFFFFF" stroke-width="1" opacity="0.06">
-    <line x1="24" y1="44" x2="104" y2="44"/>
-    <line x1="24" y1="64" x2="104" y2="64"/>
-    <line x1="24" y1="84" x2="104" y2="84"/>
-  </g>
-  <!-- significance tail -->
-  <path d="M82,78 C88,96 92,99 100,99 L100,100 L82,100 Z" fill="#2BD4C0" opacity="0.35"/>
+  <g transform="translate(0,-7)">
+  <!-- power region: the part of the effect distribution beyond the critical value (teal = power) -->
+  <path d="M70.8,51.2 L72.4,48.6 L73.9,46.9 L75.5,46.1 L77,46.2 L78.5,47.3 L80.1,49.3 L81.6,52.1 L83.2,55.6 L84.7,59.5 L86.3,63.6 L87.8,67.9 L89.3,72 L90.9,76 L92.4,79.6 L94,82.8 L95.5,85.6 L97,88 L98.6,89.9 L100.1,91.5 L101.7,92.7 L103.2,93.7 L104.8,94.4 L106.3,94.9 L107.8,95.2 L109.4,95.5 L110.9,95.7 L112.5,95.8 L114,95.9 L114,96 L70,96 Z"
+        fill="#2BD4C0" opacity="0.45"/>
   <!-- baseline -->
-  <line x1="22" y1="100" x2="106" y2="100" stroke="#3A4A6B" stroke-width="2"/>
-  <!-- curve -->
-  <path d="M24,99 C44,99 50,96 58,74 C63,58 63,40 64,40 C65,40 65,58 70,74 C78,96 84,99 104,99"
-        fill="none" stroke="url(#curve)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="14" y1="97" x2="116" y2="97" stroke="#3A4A6B" stroke-width="3"/>
+  <!-- null distribution (slate) -->
+  <path d="M18,95.6 L22.6,94.6 L27.3,92 L30.3,88.8 L33.4,84 L36.5,77.5 L39.6,69.6 L42.7,61.1 L45.8,53.5 L48.8,48 L51.9,46 L55,47.8 L58.1,53.1 L61.2,60.7 L64.3,69.1 L67.3,77.1 L70.4,83.7 L73.5,88.6 L76.6,91.9 L81.2,94.5 L85.8,95.6 L92,95.9"
+        fill="none" stroke="#94A3B8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- effect distribution (blue) -->
+  <path d="M40,95.8 L44.6,95.1 L49.3,93.4 L52.3,91.1 L55.4,87.3 L58.5,81.9 L61.6,74.8 L64.7,66.6 L67.8,58.3 L70.8,51.2 L73.9,46.9 L77,46.2 L80.1,49.3 L83.2,55.6 L86.3,63.6 L89.3,72 L92.4,79.6 L95.5,85.6 L98.6,89.9 L101.7,92.7 L104.8,94.4 L109.4,95.5 L114,95.9"
+        fill="none" stroke="#5B7CFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
 </svg>

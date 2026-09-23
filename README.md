@@ -1,4 +1,4 @@
-# REP · Clinical Statistics — Interactive Course Companion
+# Clinical Statistics (Research Education Program): Interactive Course Companion
 
 Branded per `../BRAND-STRATEGY.md`: Inference Blue + Signal Teal on cool neutrals, Fraunces/Inter/
 IBM Plex Mono, ink hero, semantic data-viz palette (slate = null, blue = effect, teal = power,
