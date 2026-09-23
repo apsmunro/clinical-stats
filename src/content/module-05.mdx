@@ -1,0 +1,394 @@
+import { DiagnosticBayesDemo } from '../components/DiagnosticBayesDemo'
+import { PriorPosteriorUpdater } from '../components/PriorPosteriorUpdater'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab (continued)**
+>
+> Same trial as Module 4: 40 patients per arm, observed difference **−4 mmHg**, 95% CI (−10.7 to
+> +2.7), p ≈ 0.24. Your colleague from Module 4 is back, and this time they ask the question
+> everyone actually wants answered: **"OK, so what's the probability the drug works?"** Module 4's answer was "the p-value can't tell you that." This module's answer is: "it depends on what
+> you believed before; let's compute it."
+
+## Section 1 — You already think like a Bayesian
+
+Before any notation, remember that you think like this every day.
+
+A 55-year-old presents with chest pain. Before any test, you've already formed a judgement (from
+the history, the risk factors, how they look) of how likely an MI is. Call that the **pre-test
+probability**. Then the troponin comes back. You don't throw away your clinical judgement and
+believe the test alone; you *combine* them. A positive test in a low-risk patient worries you a
+little; the same result in a high-risk patient changes management. The test updates your belief.
+It doesn't replace it.
+
+That is the idea behind this module: **Bayes' theorem is the arithmetic of updating a belief with new evidence.**
+
+Here is the classic example, and it's worth working through rather than memorising. A disease has a
+prevalence of 1%. Your test has 90% sensitivity and 90% specificity: a good test. A patient
+screens **positive**. What's the probability they have the disease?
+
+Most people, most *doctors*, say something near 90%. The real answer is about **8%**. Out of
+1,000 people, 10 have the disease and 9 of them test positive; but 990 don't, and 99 of *those*
+also test positive. So a positive result is one of 108, of whom only 9 are truly diseased. The test
+is good; the disease is just rare. **The prior (prevalence) matters as much as the data (the test
+result).**
+
+Try it. Drag prevalence up to 30% and watch the same positive test mean something completely
+different; flip to a negative result and watch the disease be all but excluded:
+
+<DiagnosticBayesDemo defaultPrevalence={1} defaultSensitivity={90} defaultSpecificity={90} />
+
+The general rule:
+
+> **posterior belief ∝ prior belief × what the data say**
+
+That one line is Bayes' theorem. The rest of this module applies that line to a trial instead of a diagnostic test.
+
+## Section 2 — Priors, likelihoods, posteriors
+
+Now swap the diagnosis question for the drug question. The unknown isn't "does this patient have
+the disease?" but "**what is the true effect of Snakeoilizumab?**": the true difference in mean
+BP, the same quantity Module 4 was chasing.
+
+The three ingredients:
+
+- The **prior**: what you believed about the true effect *before* the trial, expressed as a
+  distribution. A wide, flat prior says "I have no strong opinion; anything from −20 to +20 is on
+  the table." A **sceptical** prior is a narrow curve centred on 0: "most drugs like this do little
+  or nothing; I'd be surprised by a big effect." An **optimistic** prior centres somewhere negative
+  (remember: negative = BP falls).
+- The **likelihood**: what the data say (how compatible each possible true effect is with what you
+  observed). For our trial this is centred on the observed −4 mmHg, with width set by the standard
+  error (the same SE from Module 4, about 3.4 mmHg for 40 per arm with SD 15). *Small trials →
+  wide likelihood → weak influence. Big trials → narrow likelihood → strong influence.*
+- The **posterior**: prior × likelihood, renormalised. Your updated belief. It always sits
+  *between* the prior and the likelihood: a precision-weighted compromise, pulled toward whichever
+  is narrower (more informative).
+
+<PriorPosteriorUpdater defaultObserved={-4} defaultN={40} mcid={-5} />
+
+Try the presets. Two things to notice:
+
+1. **The posterior is a compromise weighted by confidence.** With a sceptical prior and a small, noisy trial, the posterior stays close to the prior. With the same prior and 400 patients per arm, the data dominate.
+2. **Priors wash out as data accumulate.** Disagreement about priors is loudest exactly when the
+   data are weakest, which is also when conclusions *should* be tentative.
+
+## Section 3 — "But isn't the prior just cheating?"
+
+The usual objection to Bayesian methods is that priors are subjective.
+
+There is a real tension here. Two analysts with different priors get different posteriors from the same
+data. Doesn't that make the answer subjective, or isn't this cheating to get the answer you want?
+
+There are three relevant replies, here presented in increasing order of importance:
+
+- **Everyone has a prior; Bayesians just write theirs down.** The frequentist analysis of Module 4
+  also rests on choices: the model, the outcome, the 0.05 convention, which comparisons were run.
+  Those judgements shape conclusions too; they're just less visible. Then when you see the result,
+  you use your existing knowledge to subjectively interpret it. This is using a prior, just inside
+  your head! A formal, Bayesian prior is an *auditable* assumption: stated, criticisable, changeable.
+- **Priors are evidence, used honestly.** Before your trial there were other trials, mechanism
+  studies, class effects. Pretending total ignorance ("flat prior everywhere") isn't neutrality.
+  It says implausible things, like a 40 mmHg effect being as credible as a 4 mmHg one. A
+  sceptical prior encodes a true empirical fact: *most new drugs do little.*
+- **Sensitivity analysis is the discipline.** You don't have to pick one prior and defend it.
+  You show the posterior under sceptical, flat, and optimistic priors. If the conclusion survives
+  all of them, it's robust; if it flips, the summary is "the data aren't robust enough to
+  settle this yet under all assumptions", something Module 4's machinery could never tell you directly.
+
+<MisconceptionCallout title="Common misconception">
+"Bayesian analysis lets you choose any answer you like via the prior." In a *weak* study, yes:
+the prior dominates, which is exactly why weak studies shouldn't settle questions (Module 8 says
+the same thing from the frequentist side). In a strong study the data outweigh any reasonable prior. The prior is a *stated starting point* that the data increasingly override. The protection against abuse is making them public and testing sensitivity.
+</MisconceptionCallout>
+
+## Section 4 — The natural advantages of Bayesian analysis
+
+Having defended the prior as a legitimate and auditable input, here is what Bayesian analysis offers over the frequentist approach.
+
+- **The output is directly interpretable by clinicians.** The posterior answers the question clinicians and patients actually want to ask: what is the probability this drug produces a meaningful effect? You can read off P(effect ≥ MCID), P(harm), or any clinically relevant threshold. The frequentist confidence interval describes the procedure's long-run record rather than this specific result, and the p-value cannot form a probability statement about the hypothesis at all. This matches how clinical decisions are made.
+
+- **A full distribution, not just a yes/no verdict.** NHST compresses complex evidence into a binary: significant or not significant. The posterior is a distribution that maps the entire plausible range of effects with associated probabilities. You can see whether mass is concentrated above or below the MCID, how much probability sits on clinically negligible effects, and form statements like "probably does something, probably not enough." This gives more information than a p-value and confidence interval together.
+
+- **Prior information formally increases precision and can increase power.** Every trial is conducted within a context of existing knowledge: earlier trials, mechanistic studies, class effects, dose-response data. The Bayesian framework puts that knowledge to formal use in the prior, tightening the posterior beyond what the current data alone could achieve. In rare diseases, paediatric studies, or any setting where recruiting sufficient patients for a fully-powered conventional trial is impractical or unethical, a well-constructed informative prior can make a modest trial informative when it otherwise would not be. We usually know more than a single trial tells us, and Bayesian analysis uses that knowledge.
+
+- **Greater analytical flexibility.** Bayesian methods handle several challenges naturally that require complex corrections in the frequentist world: interim analyses without alpha-spending rules, adaptive designs where allocation ratios evolve as evidence accumulates, and hierarchical models for multi-site or multi-treatment studies. This flexibility is a principal reason Bayesian designs are increasingly favoured in late-phase and platform trials.
+
+Sections 5 and 6 demonstrate the first two advantages concretely using the Snakeoilizumab trial.
+
+## Section 5 — The payoff: credible vs confidence intervals
+
+In the updater, choose the **flat** prior and read off the **95% credible interval**: about
+−10.6 to +2.6 mmHg, *numerically* almost identical to the 95% **confidence** interval Module 4
+computed from these same data (−10.7 to +2.7; the 0.1 mm sliver is a small-sample technical
+correction, not a conceptual difference). With a flat prior, the two intervals all but coincide.
+But the licence is different:
+
+> **A 95% credible interval:** given the prior and the data, there is a **95% probability that the
+> true effect lies in this interval.** This is the sentence Module 4 said a confidence interval cannot support. Here it is correct, because the
+> Bayesian framework treats the true effect as a quantity with a probability distribution.
+
+Put the two side by side, because the distinction is one of the course's key learning objectives:
+
+- **Confidence interval (Module 4):** "If we repeated this procedure many times, 95% of the
+  intervals it produces would contain the truth." A statement about the *procedure's long-run
+  behaviour*. Nothing probabilistic may be said about your one interval.
+- **Credible interval (this module):** "Given these data (and this prior), the true effect is in
+  this range with 95% probability." A statement about *this* interval, conditional on stated
+  assumptions.
+
+The frequentist approach avoids a prior but cannot make the statement you want. The Bayesian approach can make it, but must state a prior, which brings existing knowledge into the result.
+
+<MisconceptionCallout title="Common misconception">
+"The intervals matched, so the distinction is pedantic." They matched *here* because the prior was
+flat and the model simple. With a sceptical prior the credible interval is narrower and pulled
+toward zero: visibly different numbers (try it in the updater). And even when the numbers
+coincide, the *interpretations* differ, and only one of them answers the clinical question "what
+should I believe about this effect?". Knowing which sentence you're licensed to say is not
+pedantry; it is the difference between a misreading and a correct statement.
+</MisconceptionCallout>
+
+## Section 6 — "So what's the probability the drug works?"
+
+Now answer the colleague properly. From Module 4, p ≈ 0.24. And even if it had been p = 0.03,
+that would **not** mean "97% chance the drug works." Watch what you need to actually
+answer the question (follow along in the updater above; the numbers below are yours to check):
+
+With the **flat** prior: P(effect \< 0) ≈ **88%**. Sounds promising, but remember what it
+includes: most of that probability mass sits on *small* effects. Ask instead for P(effect ≤ −5),
+the probability of reaching a 5 mmHg effect (the smallest difference worth caring about, a number
+that will run Module 8), and it drops to about **38%**. "Probably does something, probably not
+enough": a clearer summary of this trial than the p-value gave.
+
+With the **sceptical** prior ("most drugs like this disappoint"): P(effect \< 0) ≈ **73%**, and
+the posterior mean is about −1 mmHg, not −4. The same data, viewed by a sceptic, suggest only a small effect.
+
+Then set the observed difference to −4 with **n = 400** and watch all the priors converge.
+With enough data, the conclusion no longer depends on the prior.
+
+Two lessons:
+
+1. **The probability the drug works is not 1 − p.** It never was. It depends on the prior
+   (visibly, computably), and for any realistic prior it is much lower than 1 − p would suggest.
+2. **This is why surprising findings from small trials so often fail to replicate** (Module 8's winner's
+   curse, seen from the other side). A small trial with p = 0.03 against a low prior (a rare
+   disease, an implausible mechanism, a too-good-to-be-true effect size) leaves the posterior
+   probability of a real effect modest. Bayes puts numbers on the idea that extraordinary claims need extraordinary evidence.
+
+## Section 7 — Bayes at the bedside and in the literature
+
+Where Bayesian reasoning is used in practice:
+
+- **Diagnosis.** Section 1 *was* Bayes: pre-test probability × likelihood ratio → post-test
+  probability. You already run this algorithm, now you know its name.
+- **Adaptive and rare-disease trials.** When patients are scarce, throwing away prior evidence is
+  an ethical problem, not just a statistical one. Bayesian designs formally use evidence from earlier trials, historical controls, or adult data (for paediatric studies).
+- **Reading frequentist papers.** Even with no Bayesian software in sight, the mental move "this
+  is a small trial with a surprising result and a low prior; the posterior is less exciting than
+  the abstract" is an important critical-appraisal reflex.
+- **Beyond one number.** Everything here generalises: every coefficient in the regression models
+  of Module 6 can carry a posterior distribution instead of (or alongside) a p-value. Same models,
+  either inferential lens.
+- **What we left out.** *Bayes factors* (a Bayesian way of comparing hypotheses head-to-head),
+  *hierarchical models* (letting related groups share strength), and *MCMC* (the simulation
+  machinery that fits complex Bayesian models). These tools are beyond our scope, but you will now recognise the terms when you see them.
+
+> *Frequentist statistics asks: how surprising are my data if nothing is going on? Bayesian
+> statistics asks: given everything I know, what should I now believe? They are different
+> questions. Confusing them is where most p-value misinterpretations come from.*
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="The diagnostic example as three lines of arithmetic"
+  code={`prevalence  <- 0.01
+sens        <- 0.90
+spec        <- 0.90
+
+p_pos       <- sens * prevalence + (1 - spec) * (1 - prevalence)
+(post_test  <- sens * prevalence / p_pos)   # ~0.08, not 0.90!`}
+/>
+
+<CollapsibleRSnippet
+  caption="The normal–normal update by hand (exactly what the widget does)"
+  code={`# prior: Normal(prior_mean, prior_sd); data: observed diff with standard error
+prior_mean <- 0;  prior_sd <- 2          # sceptical prior
+obs        <- -4; se       <- 15 * sqrt(2/40)   # Module 4 trial
+
+post_prec  <- 1/prior_sd^2 + 1/se^2
+post_sd    <- sqrt(1/post_prec)
+post_mean  <- (prior_mean/prior_sd^2 + obs/se^2) / post_prec
+
+c(post_mean, post_sd)                     # ~ -1.05, 1.72
+pnorm(0, post_mean, post_sd)              # P(effect < 0) ~ 0.73
+qnorm(c(.025, .975), post_mean, post_sd)  # 95% credible interval`}
+/>
+
+<CollapsibleRSnippet
+  caption="A grid approximation: the same answer without the shortcut formula"
+  code={`theta  <- seq(-20, 20, by = 0.01)               # candidate true effects
+prior  <- dnorm(theta, 0, 2)                    # sceptical prior
+like   <- dnorm(-4, theta, 15 * sqrt(2/40))     # likelihood of the data
+post   <- prior * like
+post   <- post / sum(post * 0.01)               # normalise
+
+sum(post[theta < 0] * 0.01)                     # P(effect < 0): same ~0.73`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m5-q1"
+  prompt="Your Bayesian analysis (flat prior) reports −4 mmHg, 95% credible interval (−10.6 to +2.6). Which statement is correct?"
+  options={[
+    {
+      text: 'Given the data and the prior, there is a 95% probability the true effect lies between −10.6 and +2.6.',
+      correct: true,
+      feedback:
+        'This is the credible-interval reading. The probability statement is licensed here because the framework treats the effect as having a distribution.',
+    },
+    {
+      text: 'If the study were repeated many times, 95% of such intervals would contain the true effect.',
+      correct: false,
+      feedback:
+        'That is the CONFIDENCE-interval interpretation (Module 4): a statement about the procedure over repeats, not about this interval and this posterior.',
+    },
+    {
+      text: 'The result must be wrong, because Module 4 said you can never say "95% probability the effect is in here."',
+      correct: false,
+      feedback:
+        'Module 4 forbade that sentence for confidence intervals. The entire point of this module is that the Bayesian framework earns it, at the price of a stated prior.',
+    },
+    {
+      text: '95% of patients had a BP change between −10.6 and +2.6 mmHg.',
+      correct: false,
+      feedback:
+        "This confuses the estimate’s uncertainty with patient-to-patient spread: the SD vs SE distinction, again.",
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m5-q2"
+  prompt="A small trial (wide likelihood) is analysed with a tight sceptical prior centred on 0. The posterior will be…"
+  options={[
+    {
+      text: 'Centred near the observed effect, ignoring the prior.',
+      correct: false,
+      feedback:
+        'That would require strong data. A small trial has a wide likelihood: too imprecise to move a confident prior far.',
+    },
+    {
+      text: 'Centred near 0, close to the prior: the data were too weak to move it far.',
+      correct: true,
+      feedback:
+        "The posterior is a precision-weighted compromise: the more precise source dominates, and here that’s the prior.",
+    },
+    {
+      text: 'Exactly halfway between prior mean and observed effect, always.',
+      correct: false,
+      feedback:
+        'The weighting depends on the relative precisions of prior and likelihood, not a fixed 50:50 split.',
+    },
+    {
+      text: 'Wider than both prior and likelihood.',
+      correct: false,
+      feedback:
+        'Impossible: combining two sources of information can only narrow, never widen, the posterior relative to the prior.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m5-q3"
+  prompt="As the trial grows from 40 to 4,000 per arm, what happens to the influence of the prior?"
+  options={[
+    {
+      text: 'It grows: more data, more need for assumptions.',
+      correct: false,
+      feedback:
+        'The opposite: data precision rises with n while prior precision stays fixed, so the data take over.',
+    },
+    {
+      text: 'It shrinks: the likelihood narrows and dominates any reasonable prior.',
+      correct: true,
+      feedback:
+        'Exactly. And this is why prior disagreements matter most for small studies, which is when conclusions should be cautious anyway. Verify it on the updater: at n = 1,000 the presets are nearly indistinguishable.',
+    },
+    {
+      text: 'It stays constant by definition.',
+      correct: false,
+      feedback:
+        "The prior itself doesn’t change, but its share of the posterior shrinks as the data’s precision grows.",
+    },
+    {
+      text: 'It depends on the p-value.',
+      correct: false,
+      feedback:
+        'The p-value plays no role in the updating arithmetic. Only the estimate, its standard error, and the prior do.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m5-q4"
+  prompt="A test with 90% sensitivity and 90% specificity returns positive for a condition with 1% prevalence. The probability the patient truly has the condition is closest to…"
+  options={[
+    {
+      text: '90%',
+      correct: false,
+      feedback:
+        "The trap: it ignores the prior entirely. The test’s accuracy is not the post-test probability when the condition is rare.",
+    },
+    {
+      text: '50%',
+      correct: false,
+      feedback:
+        `A common "split the difference" guess, but Bayes doesn’t average. It multiplies prior by likelihood.`,
+    },
+    {
+      text: '8%',
+      correct: true,
+      feedback:
+        'Among 1,000 people: 9 true positives (90% of 10) but 99 false positives (10% of 990), so a positive result is true 9/108 ≈ 8% of the time.',
+    },
+    {
+      text: '1%',
+      correct: false,
+      feedback:
+        'That ignores the data: the positive test DID raise the probability, eight-fold. Just not to certainty.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m5-q5"
+  prompt={`A colleague says: "p = 0.03, so there’s a 97% probability the drug works." From this module’s perspective, the most accurate response is…`}
+  options={[
+    {
+      text: 'Correct, near enough for practice.',
+      correct: false,
+      feedback:
+        "It repeats Module 4’s misconception: the p-value is P(data | H₀), not 1 minus the probability the drug works.",
+    },
+    {
+      text: "The probability the drug works can’t be computed by anyone, ever.",
+      correct: false,
+      feedback:
+        "Over-correction: Module 4 said the P-VALUE can’t give you that probability, not that nothing can. The posterior provides exactly this, given a prior.",
+    },
+    {
+      text: 'That probability CAN be computed, but it requires a prior, and for any realistic prior it will generally be lower (sometimes much lower) than 97%.',
+      correct: true,
+      feedback:
+        "P(effect is real | data) is what the posterior provides, at the cost of a stated prior. With a sceptical prior, our −4 mmHg trial gives ~73%: nowhere near 97%.",
+    },
+    {
+      text: 'It would be 97% only if the trial were perfectly conducted.',
+      correct: false,
+      feedback:
+        "Trial quality is about bias, a different problem. Even a flawless trial doesn’t let you read 1 − p as the probability the drug works.",
+    },
+  ]}
+/>

@@ -1,0 +1,295 @@
+import { DescriptiveExplorer } from '../components/DescriptiveExplorer'
+import { OutlierDragDemo } from '../components/OutlierDragDemo'
+import { SameStatsDemo } from '../components/SameStatsDemo'
+import { TwoDrugSpreadDemo } from '../components/TwoDrugSpreadDemo'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab (continued)**
+>
+> Still no trial has been done, but you've pulled the records of the **300 hypertensive patients** in your
+> clinic, the population your future trial will recruit from. Their systolic BPs: most cluster
+> around the high 110s, a few run far higher; the average is about **120 mmHg** and the standard
+> deviation about **15 mmHg**. Remember these two numbers; the rest of the course uses them.
+> Every simulated trial from Module 4 onwards draws patients from this clinic.
+
+## Section 1 — Look before you test
+
+Think of your dataset not as a spreadsheet but as 300 patients standing in a room.
+The first step in any analysis, before any test, model, or comparison, is to *look at them*: plot the data, find the middle, measure the spread, note any unusual values. Many published statistical errors would have been caught by drawing a histogram early.
+
+The histogram of your clinic's BPs peaks near 120 and tails off evenly on both sides. Many clinical measurements look like this (Module 4 explains why), but many don't: costs, lengths of stay and biomarker levels are often skewed, and summaries that work for a bell curve mislead for skewed data.
+
+Different datasets can also have identical summary statistics. Flip between
+these five datasets (or hit Cycle): the mean, median and SD are identical in every one, yet the
+patients in the room look nothing alike.
+
+<SameStatsDemo />
+
+## Section 2 — The middle: mean and median
+
+Two everyday candidates for "the middle":
+
+- The **mean**: add everything, divide by n. Uses every value; every value affects it.
+- The **median**: line everyone up, take the middle person. Uses only *order*; the extremes can
+  go as far as they like and the median won't budge.
+
+For your clinic's symmetric BPs the two nearly coincide (~120), and the mean is the natural choice.
+But now drag one patient's value upward (a transcription error, a single crisis admission, or any
+other cause of an outlier) and watch what each does:
+
+<OutlierDragDemo />
+
+Neither is "better." They answer different questions: the mean is the centre of *mass* (and the
+quantity trials usually compare: Module 4's "difference in means" is a difference of these); the
+median is the *middle patient*. Which to use depends on the shape of the data and what the number is for.
+
+<MisconceptionCallout title="Common misconception">
+"The average patient improved by 6 mmHg, so patients typically improve by about 6." Not
+necessarily. If a minority improved enormously and most barely moved, the mean reports a typical
+patient who doesn't exist.
+</MisconceptionCallout>
+
+## Section 3 — The spread around the middle: SD, IQR and variance
+
+Two patients in your clinic can differ by 40 mmHg while both are "around the average of 120." How
+do we *quantify* "around"?
+
+- **Standard deviation (SD)**: in plain language, **a typical distance from the mean.** It is calculated by taking each patient's distance from the mean, squaring it, averaging the squares, and taking the square root. Your clinic's SD of 15 mmHg means
+  a randomly chosen patient usually sits within roughly ±15 of 120; a patient two SDs out
+  (90 or 150) is unusual but far from impossible.
+- The handy bell-curve rule: **mean ± 2 SD covers ~95%** of patients (±1 SD covers ~68%). For your
+  clinic: 95% of BPs between roughly 90 and 150. The rule degrades as data get skewed, which is
+  part of why shape matters.
+- **IQR (interquartile range)**: the span of the middle half (25th to 75th percentile). Like the
+  median, it ignores the extremes. It is the robust companion for skewed data.
+- **Variance** is simply SD², the same information in squared units. This looks redundant, but variances *add* together in a way SDs don't, which is why statistical theory (and this course) works with variance.
+
+Explore all of it below. Start on the clinic preset with the ±2 SD shade on, then visit the other
+two datasets and see which summaries still describe the data well:
+
+<DescriptiveExplorer seed={2024} />
+
+Why does this course treat spread, rather than the average, as the most important quantity?
+
+Because **every hard problem in clinical research is hard in proportion to the variation in it.**
+If all patients responded identically, a trial would need two patients (one per arm) and no
+statistics. It's because responses vary that one trial result could be chance (Module 4); it's
+because patients vary that you need 142 of them per arm rather than 10 to see a 5 mmHg effect
+(Module 8); it's the variation left over after your model has done its best that sets the precision
+of every estimate you'll ever publish (Module 6). Two drugs with the same mean effect and different
+spreads are *clinically different drugs*: one of them is reliable, the other more like a lottery.
+If the "true" effect is the signal, then variance is what defines the noise we are trying to find it in.
+
+This is the course's first catchphrase:
+
+> **Variance is king.** The mean tells you the typical value. The variance decides how hard the true effect is to detect, and how many patients you need to detect it.
+
+See it in two drugs that share a mean. Both lower BP by 8 mmHg on average; widen the spread of one
+and watch more of its patients get no benefit while the average stays the same:
+
+<TwoDrugSpreadDemo />
+
+## Section 4 — Shape: when the standard summaries lie
+
+"Mean ± SD" only tells the whole story for roughly symmetric, bell-shaped data. Common clinical shapes where it fails:
+
+- **Right-skewed** (length of stay, costs, CRP, viral load): a long tail of large values drags the
+  mean above the median; ±2 SD can include impossible values (negative lengths of stay) and
+  misses where people actually are. *Report median + IQR.*
+- **Outlier-contaminated** (data-entry errors, unit mix-ups, one extraordinary patient): a handful
+  of points can move the mean and inflate the SD while 97% of the data sit unchanged. *Investigate
+  first (outliers are sometimes the finding), then summarise robustly.*
+- **Bimodal** (two humps, often two populations sharing one spreadsheet: treated and untreated,
+  two diseases, two labs' assays): no single middle value describes the data. The histogram catches in one
+  glance what no summary statistic can.
+
+This brings us back to section 1: **plot first, summarise second.** Summary statistics are
+compressions of information you can get in much higher resolution by just visualising your data.
+(The five-shape widget back in Section 1 was exactly this warning: identical means, medians, *and*
+SDs hiding wildly different distributions.)
+
+<MisconceptionCallout title="Common misconception">
+"Mean ± SD is the standard way to report data, so it's always fine." It's a *bell-curve* summary.
+On skewed data it implies things that are false: symmetric spread, meaningful ±2 SD
+coverage, a typical patient at the mean. Reviewers will likely read "mean ± SD" on an obviously
+skewed variable as a sign that nobody plotted the data.
+</MisconceptionCallout>
+
+## Section 5 — Robust data summaries (a field guide)
+
+In practice:
+
+1. **Plot first.** Histogram (or dot plot for small n). Every later choice follows from the shape.
+2. **Bell-ish?** Mean ± SD, and say n. **Skewed?** Median + IQR. **Two humps?** Don't summarise.
+   Split by the lurking subgroup and describe both.
+3. **Always give the denominator and the spread.** "Responders: 7" means nothing without "of 22".
+   "Mean improvement 6 mmHg" means little without an SD, *especially* in this course, because the SD appears in every later formula (Module 4's SE is the SD ÷ √n in disguise;
+   Module 8's sample sizes scale with SD²).
+4. **Beware the average patient.** Decisions get made for individuals drawn from the whole
+   distribution, not for the mean. A drug that helps the average patient and harms a sizeable tail
+   is not "a good drug, on average". It's a drug whose distribution you need to see.
+
+One forward pointer, to head off a very common confusion in medical statistics: the SD describes the
+spread and variation of individual *patients*. Module 4 introduces a different number, the standard
+*error* (SE), which describes the spread of *study results*, or, "how much variation is there likely
+to be between the results of this study and the *true result* I was trying to estimate". The SE
+shrinks as n grows, and is **not** interchangeable with the SD, however often people confuse them.
+We will come back to this in Module 4.
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="Describing the clinic population"
+  code={`set.seed(2024)
+bp <- rnorm(300, mean = 120, sd = 15)   # the clinic, simulated
+
+mean(bp);  median(bp)
+sd(bp);    IQR(bp)
+hist(bp, breaks = 25, main = "The clinic's BPs", xlab = "Systolic BP (mmHg)")
+abline(v = mean(bp), col = "red", lwd = 2)
+
+# the ±2 SD rule of thumb:
+mean(abs(bp - mean(bp)) < 2 * sd(bp))   # ~0.95 for bell-shaped data`}
+/>
+
+<CollapsibleRSnippet
+  caption="When the mean and median disagree (skew)"
+  code={`stay <- exp(rnorm(300, meanlog = 1.3, sdlog = 0.6))   # length of stay, days
+
+mean(stay);  median(stay)    # mean > median: the long tail pulls the mean up
+hist(stay, breaks = 30, main = "Length of stay", xlab = "Days")
+abline(v = c(mean(stay), median(stay)), col = c("red", "blue"), lwd = 2)
+# red (mean) sits to the right of blue (median)`}
+/>
+
+<CollapsibleRSnippet
+  caption="One outlier vs the summaries"
+  code={`bp_clean <- c(112, 115, 118, 120, 121, 124, 126, 128, 130)
+bp_typo  <- c(112, 115, 118, 120, 121, 124, 126, 128, 210)  # one mistyped value
+
+c(mean(bp_clean),   mean(bp_typo))     # mean rises ~9 mmHg
+c(median(bp_clean), median(bp_typo))   # median barely moves
+c(sd(bp_clean),     sd(bp_typo))       # SD increases sharply`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m2-q1"
+  prompt="You are measuring length of hospital stay for 300 admissions: most patients leave within 4 days, but a few stay for months. The most honest summary of a 'typical' stay is…"
+  options={[
+    {
+      text: 'The mean, because it uses all the data.',
+      correct: false,
+      feedback:
+        'True, but it answers the wrong question. Using all the data is exactly how the long tail gets its vote and drags the mean above where patients actually are.',
+    },
+    {
+      text: 'The median (with the IQR), because the long tail drags the mean above where patients actually are.',
+      correct: true,
+      feedback:
+        'Right-skewed data: the tail pulls the mean upward, so the mean describes the bed-days, not the typical patient.',
+    },
+    {
+      text: 'The mean ± 2 SD.',
+      correct: false,
+      feedback:
+        'This inherits the mean’s problem and adds a coverage rule that’s only honest for bells. It may even claim negative lengths of stay.',
+    },
+    {
+      text: 'The longest stay, to be safe.',
+      correct: false,
+      feedback: 'That isn’t a summary at all. It’s a single extreme value.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m2-q2"
+  prompt="Your clinic's BPs are roughly bell-shaped with mean 120 and SD 15. About what fraction of patients have BP between 90 and 150?"
+  options={[
+    {
+      text: 'About half.',
+      correct: false,
+      feedback: '90 and 150 are two SDs out. Half would correspond to a much narrower band.',
+    },
+    {
+      text: 'About two-thirds.',
+      correct: false,
+      feedback: 'Two-thirds is the ±1 SD rule (105 to 135). This band is ±2 SD.',
+    },
+    {
+      text: 'About 95%.',
+      correct: true,
+      feedback:
+        '90 and 150 are mean ± 2 SD, and the bell-curve rule of thumb puts ~95% of values inside. Try the shade toggle in the explorer, then watch the rule degrade on the skewed preset.',
+    },
+    {
+      text: 'Essentially all of them.',
+      correct: false,
+      feedback:
+        'About 1 in 20 sits outside ±2 SD. In a 300-patient clinic, that’s 15 real people.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m2-q3"
+  prompt="One transcription error turns a BP of 130 into 210 in a list of nine values. Which pair of summaries is most disturbed?"
+  options={[
+    {
+      text: 'Median and IQR.',
+      correct: false,
+      feedback:
+        'These only care about order, and one value barely changes the ordering. That is exactly their robustness.',
+    },
+    {
+      text: 'Mean and SD.',
+      correct: true,
+      feedback:
+        'The mean is the centre of mass, so one extreme value tugs it hard, and the SD (built from squared distances) changes even more.',
+    },
+    {
+      text: 'Median and mean equally.',
+      correct: false,
+      feedback:
+        'They respond very differently: the mean chases the outlier (one value in nine carries 11% of its weight); the median barely steps.',
+    },
+    {
+      text: 'None: one value in nine cannot move a summary.',
+      correct: false,
+      feedback:
+        'This badly underestimates leverage: drag the dot in the widget and watch the mean shift by ~9 mmHg.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m2-q4"
+  prompt="Two antihypertensives both lower BP by a mean of 8 mmHg. Drug A: SD of response 4 mmHg; Drug B: SD of response 16 mmHg. Why does the course insist these are clinically different drugs?"
+  options={[
+    {
+      text: 'They aren’t: the same mean means the same effect.',
+      correct: false,
+      feedback: 'The "average patient" fallacy from Section 5. Decisions are made for whole distributions, not means.',
+    },
+    {
+      text: 'Drug B’s responses vary so widely that many patients get little benefit (and some may worsen), while Drug A is consistent, and B’s noise will also make every trial of it harder.',
+      correct: true,
+      feedback:
+        'Variance is king, in one question. With SD 16 around a mean of 8, a sizeable share of patients sit at zero benefit or worse; and Module 8 will show the noisier drug needs a far bigger trial for the SAME evidence.',
+    },
+    {
+      text: 'Drug A must have been studied in healthier patients.',
+      correct: false,
+      feedback: 'Nothing in the data says so. That invents an explanation the numbers don’t need.',
+    },
+    {
+      text: 'A larger SD means the drug is stronger.',
+      correct: false,
+      feedback: 'Spread is not magnitude. The SD measures inconsistency, not potency.',
+    },
+  ]}
+/>

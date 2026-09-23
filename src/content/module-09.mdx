@@ -1,0 +1,509 @@
+import { PaperAbstract } from '../components/PaperAbstract'
+import { AbsoluteRelativeDemo } from '../components/AbsoluteRelativeDemo'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab: endgame**
+>
+> Your trial is done (Module 4); your redesign is specced (Module 8). **Three other groups have now published on Snakeoilizumab**, and your hospital's formulary
+> committee wants your opinion by Friday. The three papers (a "definitive" null trial, a small
+> dramatic win, and a registry study with a press release) are this module's working material.
+> This module applies everything you have learned, under time pressure, as in real practice.
+
+## Section 1 — The appraisal mindset
+
+Module 1 named the three ways research misleads: **chance, bias, misinterpretation**. Appraisal looks for these three problems in a set order. Three habits
+before any checklist:
+
+- **Methods before Results.** The Methods section shows whether the study can be trusted.
+  Decide what the study *could* show before reading what it claims to show. (Corollary: the
+  abstract's conclusion sentence is the last thing you read, not the first.)
+- **Find the comparison.** Every claim involves a comparison, stated or implied. Compared to whom?
+  Randomised or self-selected (Module 6's confounding by indication)? If observational: what's on
+  the adjustment list, and what obviously isn't?
+- **Find the number that would matter.** Before judging what they found, fix what would be important: the
+  MCID (Modules 1 and 8). A study can be impeccably analysed and still aimed at the wrong target.
+
+Experienced readers don't work through a checklist from start to finish. They ask three questions in order, and move on only if the previous answer is satisfactory. This is the **three-step method**:
+
+1. **What, precisely, was the question?** What did they try to find out, and why? *(Step 1)*
+2. **Does this study answer it?** In two halves: was this the *best kind of study* that could
+   answer the question — the gold-standard design — and was *this particular execution* clean
+   enough to trust? *(Steps 2a and 2b)*
+3. **Does this study apply to me?** Even a flawless answer to someone else's question may not
+   transfer to your patients and your clinic. *(Step 3)*
+
+The six-question checklist most of this module is focussed on lives entirely inside **Step 2b**. That's
+where the statistics are key, so that's where we spend longest. Remember appraisals fail just as often at the steps on either side of it: a question you never quite pinned down, or an answer that doesn't fit the
+patient in front of you.
+
+## Section 2 — Step 1: What, precisely, was the question?
+
+Get this wrong and everything downstream is wasted effort. A flawless answer to a vague or
+mis-stated question tells you nothing, and you will be surprised how often it is hard to tell
+what exactly the research team were trying to achieve, and why. Make sure you pin the question down before
+you read another word of Results.
+
+**For a trial, the question is PICO:** **P**atient (who, exactly — and how sick?),
+**I**ntervention (what, at what dose, when?), **C**omparator (better than *what* — placebo, or the
+current standard? superiority or non-inferiority?), **O**utcome (measured how, and when?). If the question doesn't fit PICO, the authors probably haven't defined it clearly.
+
+**For an observational study, two distinctions determine what the study can show:**
+
+- **Descriptive or inferential?** Counting what happened, or estimating a relationship? Different
+  questions, different standards of proof.
+- **Causal or predictive?** "Does the drug *cause* fewer events?" and "Does taking the drug
+  *predict* fewer events?" are not the same question. Module 6 explained that the gap between them is confounding. A model can predict well and still tell you nothing about cause.
+
+Then, always: **and why?** What decision hangs on the answer? That is where the **MCID** re-enters
+(your §1 habit, "the number that would matter"): the question is never "is there an effect?" but
+"is there an effect *big enough to act on*?". We've been using 5 mmHg since Module 1.
+
+The three Snakeoilizumab papers ahead all address the *same* clinical question. *Does
+Snakeoilizumab lower blood pressure (or cardiovascular events) by a margin worth having, versus the
+realistic alternative?* Watch how differently each paper actually operationalises it. Much of appraisal is noticing when the question a study *answers* has drifted from the question it
+*asks*.
+
+## Section 3 — Step 2 (part a): Is this the best possible design?
+
+Step 2 has two halves, and clinicians routinely skip the first. Before asking whether *this* study
+was executed cleanly, ask whether it is even the *right kind of study* for the question. Each
+question type has a gold-standard design. The appraisal move is to name it, then measure how far
+the study in front of you falls short, and whether that shortfall was avoidable.
+
+<div className="table-wrap">
+  <table className="data-table">
+    <thead>
+      <tr><th>The question is about…</th><th>Gold-standard design</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Intervention / treatment effect</td><td>Randomised controlled trial</td></tr>
+      <tr><td>Diagnosis (does this test work?)</td><td>Diagnostic-accuracy study vs a reference standard</td></tr>
+      <tr><td>Prognosis / natural history</td><td>Cohort study (with a control group)</td></tr>
+      <tr><td>Risk factor / causation</td><td>Cohort or case-control</td></tr>
+    </tbody>
+  </table>
+</div>
+
+This matters: a registry used to answer a *treatment* question is not a slightly weaker RCT but the wrong design, and careful execution cannot fix that. The gold
+standard for "does this treatment work?" is randomisation, and randomisation is exactly what it
+lacks (Module 6's confounding by indication, structural and unfixable). When a study uses a weaker
+design than the question allows, ask the question: *was this the best study that could have
+been done, or just the easiest?* (Module 1: "feasibility is king, science gets shoe-horned in
+afterwards.")
+
+For the running case: ZENITH-BP and RAPID-BP are RCTs: the right tool for a treatment question, so
+their problems (ahead) are problems of *execution*, Step 2b. SNAKE-REG is a registry pointed at a
+treatment question, which is a Step 2a failure before we even reach its statistics. That distinction
+changes what the flaws *mean*.
+
+## Section 4 — Step 2 (part b): Does the execution hold up? (internal validity)
+
+Say you have a clear question and the right design. Now the part this course has trained you for, young grasshopper: was *this execution* clean enough to believe? This is **internal validity**,
+and it is where the statistics are fundamental. Each item is a way poor execution can undermine a good design:
+
+1. **Who was compared, and was the comparison fair?** Randomised → chance imbalance is quantified
+   by the machinery (Module 4). Observational → assume confounding until shown otherwise; adjustment
+   models what was measured, never what wasn't (Module 6).
+2. **What was measured, and how honestly is it summarised?** Right scale, right summary (mean ± SD
+   vs median + IQR), denominators present, spread reported. *Variance is king*, so they should report it (Module 2).
+3. **Powered for *what*?** Find the effect size in the power calculation. Is it a defensible MCID
+   or a convenient number? No power statement at all is itself an answer (Modules 1, 8).
+4. **What does the confidence interval say?** Not "significant or not", but *which effects remain
+   compatible with the data*, and does that range include the MCID? A CI containing both "nothing"
+   and "clearly worthwhile" means *inconclusive*, whatever the abstract says (Module 4).
+5. **What is the effect in absolute terms?** Baseline risk, ARR, NNT. Relative numbers advertise;
+   absolute numbers inform (Module 6; widget in Section 8).
+6. **Any spin?** Small-n drama (winner's curse, Module 8), "trend toward significance", post-hoc
+   power, subgroups discovered after the fact, OR quietly read as RR, causal verbs on observational
+   data, a p-value asked to say Bayesian things it cannot (Modules 3, 5).
+
+## Section 5 — Paper one: the "definitive" null
+
+<PaperAbstract
+  title="ZENITH-BP"
+  subtitle="Snakeoilizumab versus placebo for essential hypertension: a randomised controlled trial"
+  methods="Multicentre, double-blind RCT. 60 patients per arm. The study had 80% power to detect an 8 mmHg difference in systolic BP (alpha 0.05)."
+  results="Mean difference −3.8 mmHg (intervention − placebo), 95% CI −9.2 to +1.6; p = 0.17."
+  conclusion="Snakeoilizumab is ineffective for essential hypertension and should not be pursued."
+/>
+
+Commit to your verdict before reading on:
+
+<SelfCheckQuestion
+  id="m9-q1"
+  prompt="ZENITH-BP: what is the principal problem with the conclusion?"
+  options={[
+    {
+      text: 'The p-value was computed incorrectly.',
+      correct: false,
+      feedback:
+        'Nothing suggests a computational error. The arithmetic is fine; the AIM was off. Look at what the study was powered to detect.',
+    },
+    {
+      text: 'The study was powered above the MCID, and the CI still contains clinically important effects: this null is uninformative, not negative.',
+      correct: true,
+      feedback:
+        'Powered for 8 mmHg when 5 mmHg is what matters: structurally blind (Module 8). And the CI brackets −5, so a worthwhile drug remains fully compatible with these data (Module 4).',
+    },
+    {
+      text: '60 patients per arm is always too few for any conclusion.',
+      correct: false,
+      feedback:
+        'No fixed n is "always" too few. Sufficiency depends on the MCID and the SD; that contingency is the whole point of Module 8.',
+    },
+    {
+      text: 'Blood pressure is the wrong outcome.',
+      correct: false,
+      feedback: "That dodges the appraisal. The outcome is fine; the design's sensitivity is the issue.",
+    },
+  ]}
+/>
+
+Against the checklist:
+
+- **Question 3:** powered for **8 mmHg**. Your MCID has been 5 mmHg since Module 1. At n = 60 per
+  arm the minimum detectable effect (80% power) is ~7.7 mmHg, so the study was *unable to detect* the difference that matters (Module 8's hidden underpowering).
+- **Question 4:** the CI runs from −9.2 to +1.6. It *contains the MCID* (−5) comfortably. The data
+  are compatible with a clinically worthwhile drug and with a useless one. That is a classic **uninformative null** (Module 4 called this exact CI shape "genuinely inconclusive").
+- Verdict for the committee: *ZENITH-BP does not show the drug fails; it shows that a study which
+  could not have caught a 5 mmHg effect, didn't.* Calling the drug "ineffective" misreads an absence of evidence.
+
+## Section 6 — Paper two: the small dramatic win
+
+<PaperAbstract
+  title="RAPID-BP"
+  subtitle="Rapid antihypertensive effect of Snakeoilizumab: an open-label randomised study"
+  methods="Single-centre, open-label. 25 patients per arm; BP measured by ward staff at two weeks."
+  results="Mean difference −9 mmHg; p = 0.04."
+  conclusion="Snakeoilizumab produces reductions nearly twice those previously reported; rapid adoption should be considered."
+/>
+
+<SelfCheckQuestion
+  id="m9-q2"
+  prompt="RAPID-BP: the best characterisation of this study is…"
+  options={[
+    {
+      text: 'A definitive demonstration of superior efficacy.',
+      correct: false,
+      feedback: 'That takes the headline at face value. Ask what kind of result this design was even capable of publishing.',
+    },
+    {
+      text: "At ~20% power for realistic effects, a significant result was only reachable via an inflated estimate (the winner's curse), compounded by unblinded measurement; expect shrinkage on replication.",
+      correct: true,
+      feedback:
+        `This is Module 8's winner's curse: underpowered designs publish flukes, and "twice previous reports" is the selection effect talking. Module 5 adds that a sober prior leaves the posterior far below −9.`,
+    },
+    {
+      text: 'Fraudulent until proven otherwise.',
+      correct: false,
+      feedback:
+        "No fraud is needed. Honest randomness plus selection at low power does this reliably; that's what makes the winner's curse so damaging.",
+    },
+    {
+      text: 'Uninterpretable because single-centre.',
+      correct: false,
+      feedback:
+        "Single-centre limits generalisability but doesn't void the arithmetic. The power and blinding problems are the live ones.",
+    },
+  ]}
+/>
+
+Against the checklist:
+
+- **Small + significant + surprising** is the winner's-curse signature (Module 8): at n = 25 the
+  power to detect a realistic 5 mmHg is ~20%, so *this design reaches p \< 0.05 only when chance overestimates the effect*. Significant results from it systematically overstate the truth.
+  "Nearly twice those previously reported" is what you expect when only significant results from small studies get noticed, not a discovery.
+- **Module 5's lens:** against any sober prior (most BP drugs deliver modest effects; previous
+  reports said ~5), the posterior given one noisy −9 sits far below −9.
+- **Open-label** (checklist question 2): unblinded BP measurement is a major source of bias; expectation alone can shift readings by several mmHg.
+- Verdict: *plausibly some effect, almost certainly not −9; replication, not adoption.*
+
+## Section 7 — Paper three: the registry with a press release
+
+<PaperAbstract
+  title="SNAKE-REG"
+  subtitle="Snakeoilizumab and cardiovascular events: a retrospective registry analysis"
+  methods="Retrospective registry, 4,800 patients. Cardiovascular event rate ~30% among non-users over follow-up. Adjusted for 12 covariates."
+  results="Adjusted odds ratio 0.55 (95% CI 0.41–0.74) for Snakeoilizumab users versus non-users."
+  conclusion="Snakeoilizumab halves cardiovascular risk."
+/>
+
+<SelfCheckQuestion
+  id="m9-q3"
+  prompt="SNAKE-REG: the TWO central problems with the press-release conclusion are…"
+  options={[
+    {
+      text: 'Reading an OR as an RR for a common outcome, and treating an adjusted observational association as causal.',
+      correct: true,
+      feedback:
+        'With a 30% baseline risk, OR 0.55 means RR ≈ 0.64: "halves" misreads the OR as an RR (Module 6). And no covariate list converts prescription-by-indication into randomisation.',
+    },
+    {
+      text: 'The sample is too small, and the CI is too wide.',
+      correct: false,
+      feedback:
+        "n = 4,800 and CI 0.41–0.74: neither small nor wide. Precision isn't the problem; validity is.",
+    },
+    {
+      text: 'ORs cannot be computed from registries, and 12 covariates is too few.',
+      correct: false,
+      feedback:
+        'Both halves false: ORs are computable anywhere, and no number of covariates (12 or 200) covers the unmeasured.',
+    },
+    {
+      text: 'The events were too common to study.',
+      correct: false,
+      feedback: "Common events are EASIER to study: Module 8's rare-event lesson, inverted.",
+    },
+  ]}
+/>
+
+Against the checklist:
+
+- **"Halves"** reads the OR as an RR. Events here are *common* (~30% in non-users): OR 0.55
+  corresponds to risks 30% → 19%, a risk ratio of **0.64**, not 0.5 (Module 6's OR/RR trap, in
+  the wild).
+- **The honest numbers:** ARR ≈ 11 percentage points, NNT ≈ 10. This would be impressive if the effect were causal, which brings us to:
+- **Checklist question 1:** registry users were *prescribed* the drug by clinicians who chose whom to treat. Twelve covariates model what was recorded; confounding (Module 6's demo, though here
+  perhaps healthier patients selecting the drug) survives any list length. A causal claim ("halves risk") from an observational design is a classic warning sign.
+- Verdict: *a hypothesis worth a trial, sold as a conclusion.*
+
+<MisconceptionCallout title="Common misconception">
+"n = 4,800, so surely size fixes it." Size fixes *chance*; it does nothing to bias. A huge biased
+study is a precise estimate of the wrong thing (Module 1 said it; the registry just demonstrated
+it). Be most suspicious exactly when the CI is tightest and the design is weakest: confidence in
+the wrong number is worse than uncertainty about the right one.
+</MisconceptionCallout>
+
+## Section 8 — Relative vs absolute: the spin amplifier
+
+Relative risk is the most common way to make results sound bigger. "Halves your risk" can mean a large benefit or a trivial one. **The baseline risk decides which**, and headlines usually leave it out. Start at the default (a 2% baseline), then drag the baseline to 40%: the same relative effect gives a 20-fold difference in absolute benefit.
+
+<AbsoluteRelativeDemo defaultBaseline={2} defaultRr={0.5} />
+
+The discipline: whenever you read a relative claim, **demand the baseline** and recompute.
+ARR = baseline × (1 − RR); NNT = 100 ÷ ARR (in percentage points). It takes seconds, and most press releases look very different afterwards.
+
+## Section 9 — The spin lexicon (a field guide)
+
+Phrases that should make you suspicious. Each is a misuse covered earlier in the course:
+
+- **"Trend toward significance" / "approaching significance"** (p = 0.08). p-values don't
+  *approach*; the data are what they are. Either the CI is informative or it isn't (Module 4).
+  (Curiously, p = 0.04 is never reported as "trend toward non-significance.")
+- **"Post-hoc power was calculated…"** Circular; a re-expression of the p-value (Module 8). It usually appears because a reviewer asked for it.
+- **"Significant in the subgroup of…"** Test enough subgroups after the fact and chance alone will produce a "responder population" (Module 4's false positives). Unless the subgroup was pre-specified, treat it as exploratory, not as evidence.
+- **"Adjusted for [N] covariates"** as proof of causation. Adjustment only handles the confounders that were measured (Module 6).
+- **"No difference between groups" (p > 0.05).** Show me the CI: no difference *demonstrated* is
+  not no difference *present* (Modules 4, 8).
+- **Causal verbs on observational nouns.** "Reduces", "protects", "prevents" attached to
+  registries and cohorts. Only the study design can justify causal language (Modules 1, 6).
+
+<MisconceptionCallout title="Reviewer's lens" variant="lens">
+One reflex covers half this list: **ask what the authors *needed* to be true, then check whether
+the analysis was given a chance to disagree.** Pre-specification, blinding, an MCID named in
+advance, a CI displayed without comment: these are signs that the analysis could have produced an unwelcome result.
+</MisconceptionCallout>
+
+## Section 10 — Step 3: Does this study apply to me? (external validity)
+
+Pass Steps 1 and 2 and you have a trustworthy answer to *someone's* question, about *someone's*
+patients. Step 3 asks whether it is *yours*. This is **external validity** (generalisability), and
+no statistic certifies it. It is a clinical judgement, which is exactly why you have to make it yourself.
+Three questions:
+
+- **Are these patients like mine?** Check what someone had to *do to get into the study* — the
+  eligibility criteria, the setting, the baseline severity. A trial in tertiary-centre patients
+  with severe disease may say little about the mild cases filling your clinic.
+- **Is the intervention feasible in my practice?** Could you actually deliver it — the dose, the
+  monitoring, the measurement conditions — or did it lean on trial infrastructure you don't have?
+- **Can I persuade people it matters?** The formulary committee meets Friday. An effect that is
+  real, important, *and* applicable still has to be argued — in absolute terms (Section 8), against
+  cost and the alternatives.
+
+Now revisit the three papers through this lens and notice the trade-off it exposes:
+
+- **ZENITH-BP** is a clean multicentre double-blind RCT, so *if* it had been informative its
+  applicability would be decent. But it failed Step 2b: there is no trustworthy answer to apply.
+  **Step 3 only matters once Step 2 is passed.** Don't reach for generalisability to rescue an
+  uninformative study.
+- **RAPID-BP** is single-centre and open-label, with BP read by ward staff at two weeks. Even
+  granting an effect, would it reproduce outside that one centre, measured by people who knew which
+  arm they were looking at? Narrow population and unreliable measurement: weak external and internal validity.
+- **SNAKE-REG** is different. Its 4,800 real-world patients on real prescriptions are *exactly* the
+  messy population you treat. Its **external validity is genuinely strong**, the one thing
+  registries do better than tidy RCTs. Its internal validity is the weak part. That is a common
+  trade-off: RCTs buy internal validity with narrow eligibility (strong Step 2b, fragile Step 3);
+  observational studies buy a real-world population at the cost of confounding (strong Step 3,
+  fragile Step 2b). The three-step method keeps you from mistaking one for the other.
+
+<SelfCheckQuestion
+  id="m9-q7"
+  prompt="SNAKE-REG enrols 4,800 patients who look exactly like the ones in your clinic, while ZENITH-BP's RCT used a narrow, tightly-screened sample. Which reading is right?"
+  options={[
+    {
+      text: "SNAKE-REG has the stronger external validity but the weaker internal validity; a real-world population doesn't fix confounding, so it still can't carry a causal claim.",
+      correct: true,
+      feedback:
+        "The standing trade-off. Registries generalise well precisely because they're unselected — but that same lack of selection is the confounding randomisation was invented to remove. Apply Step 3 only once Step 2 is satisfied.",
+    },
+    {
+      text: 'The larger, more representative sample makes SNAKE-REG the more trustworthy guide to whether the drug works.',
+      correct: false,
+      feedback:
+        `That swaps external validity for internal validity. Representativeness answers "do these patients resemble mine?", not "did the drug cause the effect?" Size and realism don't touch confounding — the misconception this module keeps flagging.`,
+    },
+    {
+      text: "ZENITH-BP's narrow sample makes it useless for your patients.",
+      correct: false,
+      feedback:
+        "Narrow eligibility limits generalisability, but a well-designed RCT's internal validity is exactly what you can't get elsewhere; you weigh its applicability, you don't bin it. (And ZENITH's real problem was power, not its sample.)",
+    },
+    {
+      text: 'External and internal validity rise and fall together, so the bigger study wins on both.',
+      correct: false,
+      feedback:
+        'They often *trade off*: tight eligibility buys internal validity at the cost of generalisability; an unselected registry does the reverse. Conflating them is the error Step 3 exists to prevent.',
+    },
+  ]}
+/>
+
+## Section 11 — What statistics cannot certify (course summary)
+
+Let us end where Module 1 began, with some boundaries clearly drawn. After nine modules, statistics can:
+quantify what chance can fake (Module 4), update your beliefs with evidence (5), compare
+like with like on what you measured (6), show how the named tests are one model (7), and tell you
+before you start whether your study can answer its question (8). It cannot:
+
+- **Certify causation.** Design does that (Modules 1, 4, 6).
+- **Certify importance.** The MCID does that, and it's yours (Modules 1, 8).
+- **Certify data quality.** Conduct does that (Module 1).
+- **Certify applicability.** Whether the answer transfers to your patients is external validity
+  (Step 3) and it lives in clinical judgement, not the confidence interval.
+- **Replace judgement.** Nothing does. The numbers inform your judgement; they do not replace it.
+
+> *A paper is a claim plus evidence. Statistics helps you assess the evidence. Whether you accept the claim is still your decision.*
+
+One last piece of advice: **befriend a statistician, ideally
+before data collection.** Everything in Modules 1–9 makes that conversation better, but nothing in
+them replaces it.
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="Converting an OR to risks, ARR and NNT"
+  code={`# "Halves cardiovascular risk!" - OR 0.55, but events are common (30%)
+p0   <- 0.30                       # baseline risk (non-users)
+or   <- 0.55
+odds0 <- p0 / (1 - p0)
+p1   <- (odds0 * or) / (1 + odds0 * or)
+
+p1                # 0.19  -> treated risk
+p1 / p0           # 0.64  -> the actual risk ratio ("halves" was the OR)
+p0 - p1           # 0.11  -> ARR: 11 percentage points
+ceiling(1 / (p0 - p1))   # NNT: 1/0.109 = 9.2 -> round up: 10`}
+/>
+
+<CollapsibleRSnippet
+  caption="Was that null informative? Recompute what they could detect"
+  code={`# ZENITH-BP: n = 60/arm, SD 15 - what could 80% power actually see?
+power.t.test(n = 60, sd = 15, sig.level = 0.05, power = 0.80)$delta
+# ~7.7 mmHg -> structurally blind to a 5 mmHg MCID
+
+# and the power they had for the effect that matters:
+power.t.test(n = 60, delta = 5, sd = 15, sig.level = 0.05)$power
+# ~0.44 -> less than a coin flip's chance of detecting the MCID`}
+/>
+
+## Self-check (closing the course)
+
+<SelfCheckQuestion
+  id="m9-q4"
+  prompt="A trial reports relative risk 0.50 for an outcome with a 2% baseline risk. Which statement gives the patient the most honest picture?"
+  options={[
+    {
+      text: '"This treatment halves your risk."',
+      correct: false,
+      feedback:
+        "True and radically incomplete. Drag the widget's baseline slider and watch the same sentence describe NNT 100 and NNT 5.",
+    },
+    {
+      text: '"Your risk falls from 2% to 1%; about 100 people need treatment for one to benefit."',
+      correct: true,
+      feedback:
+        'Both framings, anchored to the baseline: RR 0.5 here buys 1 absolute point, NNT 100. Now the patient can actually weigh it.',
+    },
+    {
+      text: '"This treatment is ineffective: 1% is trivial."',
+      correct: false,
+      feedback:
+        "Overcorrects: NNT 100 can be excellent for a cheap, safe drug against a serious outcome. That's a judgement, which is the point.",
+    },
+    {
+      text: '"Half of treated patients benefit."',
+      correct: false,
+      feedback: 'Confuses relative risk with response rate: entirely different quantities.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m9-q5"
+  prompt={'A paper reports "a trend toward significance (p = 0.08)" for its primary outcome. The appropriate reading is…'}
+  options={[
+    {
+      text: 'The effect is real but the study was slightly small.',
+      correct: false,
+      feedback: 'Asserts what the data cannot ("real"), and invents a counterfactual study to do it.',
+    },
+    {
+      text: 'Read the confidence interval: the data are what they are, and the CI tells you which effects remain compatible: "trend" language adds nothing but hope.',
+      correct: true,
+      feedback:
+        'p = 0.08 is a fact about a tail area, not a direction of travel (Module 4). The CI carries the actual information.',
+    },
+    {
+      text: 'The result is significant at the 10% level, which is equivalent.',
+      correct: false,
+      feedback: 'It changes the threshold after seeing the data. The threshold was chosen (by convention) in advance.',
+    },
+    {
+      text: 'The authors should have computed post-hoc power to settle it.',
+      correct: false,
+      feedback: "Module 8's post-hoc power fallacy, again: it's always circular, and it settles nothing.",
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m9-q6"
+  prompt={'After this course, which statement best describes what a "statistically rigorous" paper guarantees?'}
+  options={[
+    {
+      text: 'Its conclusions are true.',
+      correct: false,
+      feedback:
+        'No analysis can promise truth. Module 5 priced how often "significant" findings disappoint against any realistic prior.',
+    },
+    {
+      text: 'Its effect is clinically important.',
+      correct: false,
+      feedback:
+        "That's the MCID's job, not the p-value's. Significance ≠ importance was Module 4's refrain and Module 8's first lesson.",
+    },
+    {
+      text: 'Chance has been properly accounted for, but causation, importance, and data quality still rest on design, the MCID, and conduct, which the reader must judge.',
+      correct: true,
+      feedback:
+        "The course's closing argument: statistics quantifies uncertainty due to chance; everything else is bought with design and judgement.",
+    },
+    {
+      text: 'It will replicate.',
+      correct: false,
+      feedback:
+        "Replication depends on power, priors, and selection effects. Module 8's winner's curse produces rigorous-looking results that don't replicate.",
+    },
+  ]}
+/>

@@ -1,0 +1,26 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statera mark">
+  <defs>
+    <linearGradient id="ink" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0F1830"/>
+      <stop offset="1" stop-color="#0A0F1E"/>
+    </linearGradient>
+    <linearGradient id="curve" x1="20" y1="40" x2="108" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5B7CFF"/>
+      <stop offset="1" stop-color="#2BD4C0"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#ink)"/>
+  <!-- faint grid -->
+  <g stroke="#FFFFFF" stroke-width="1" opacity="0.06">
+    <line x1="24" y1="44" x2="104" y2="44"/>
+    <line x1="24" y1="64" x2="104" y2="64"/>
+    <line x1="24" y1="84" x2="104" y2="84"/>
+  </g>
+  <!-- significance tail -->
+  <path d="M82,78 C88,96 92,99 100,99 L100,100 L82,100 Z" fill="#2BD4C0" opacity="0.35"/>
+  <!-- baseline -->
+  <line x1="22" y1="100" x2="106" y2="100" stroke="#3A4A6B" stroke-width="2"/>
+  <!-- curve -->
+  <path d="M24,99 C44,99 50,96 58,74 C63,58 63,40 64,40 C65,40 65,58 70,74 C78,96 84,99 104,99"
+        fill="none" stroke="url(#curve)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

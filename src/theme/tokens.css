@@ -1,0 +1,106 @@
+/* ---------------------------------------------------------------------------
+   REP · Clinical Statistics — brand tokens (from BRAND-STRATEGY.md §4).
+   Single source of truth: components and charts read these variables
+   (charts via src/theme/chart.ts, which resolves them at render time).
+   --------------------------------------------------------------------------- */
+:root {
+  /* — Neutrals / surfaces (light) — */
+  --bg:            #FFFFFF;
+  --bg-subtle:     #F6F8FC;   /* page background */
+  --surface:       #FFFFFF;   /* cards */
+  --surface-2:     #F1F5F9;   /* insets, code wells */
+  --border:        #E2E8F0;   /* hairline */
+  --border-strong: #CBD5E1;
+
+  /* — Text — */
+  --text:          #0C1322;   /* ink */
+  --text-muted:    #475569;
+  --text-subtle:   #64748B;
+
+  /* — Brand — */
+  --primary:          #2756E6; /* Inference Blue */
+  --primary-hover:    #1E45BD;
+  --primary-contrast: #FFFFFF;
+  --primary-tint:     #ECF1FE;
+  --accent:           #12B5A3; /* Signal Teal — use sparingly */
+  --accent-tint:      #E5F8F5;
+
+  /* — Ink hero gradient — */
+  --ink-900: #0A0F1E;
+  --ink-800: #0F1830;
+  --ink-700: #131C3A;
+
+  /* — Semantic — */
+  --warn:        #E8A33D;  --warn-bg:   #FDF6EC;  --warn-border: #F0CE93;
+  --danger:      #E5484D;  --danger-bg: #FDECEC;
+  --success:     #12B5A3;
+  --info:        #2756E6;
+
+  /* — Data-viz (semantic, colour-blind aware; fixed meaning course-wide) — */
+  --viz-null:   #94A3B8;  /* null distribution / non-significant */
+  --viz-signal: #2756E6;  /* alternative / the real effect */
+  --viz-power:  #12B5A3;  /* power region (1 − β) / significant */
+  --viz-alpha:  #E5484D;  /* α / false positive / misses */
+  --viz-beta:   #E8A33D;  /* β / false negative / caution */
+  --viz-grid:   #E9EEF6;
+  --viz-axis:   #CBD5E1;
+  --viz-text:   #475569;
+  /* categorical sequence */
+  --viz-c1: #2756E6; --viz-c2: #12B5A3; --viz-c3: #E8A33D;
+  --viz-c4: #E5484D; --viz-c5: #7C5CFC; --viz-c6: #0EA5E9;
+
+  /* — Effects — */
+  --ring:      0 0 0 3px rgba(39, 86, 230, 0.30);
+  --shadow-sm: 0 1px 2px rgba(12, 19, 34, 0.06);
+  --shadow-md: 0 4px 16px -4px rgba(12, 19, 34, 0.10);
+  --shadow-lg: 0 12px 40px -10px rgba(12, 19, 34, 0.18);
+
+  /* — Radius — */
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 20px; --r-full: 999px;
+
+  /* — Spacing (4px base) — */
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem;
+  --s-5: 1.5rem; --s-6: 2rem; --s-7: 3rem; --s-8: 4rem;
+
+  /* — Type — */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* — Motion — */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* — Layout — */
+  --content-width: 68ch;
+  --widget-width: 62rem;
+}
+
+/* — Dark mode — */
+:root[data-theme='dark'] {
+  --bg:            #0A0F1E;
+  --bg-subtle:     #0C1322;
+  --surface:       #111A2E;
+  --surface-2:     #16213A;
+  --border:        #1E2B45;
+  --border-strong: #2A3A5C;
+  --text:          #E6ECF5;
+  --text-muted:    #9AA8C0;
+  --text-subtle:   #7689A6;
+  --primary:          #5B7CFF;
+  --primary-hover:    #7B95FF;
+  --primary-contrast: #0A0F1E;
+  --primary-tint:     #16213A;
+  --accent:           #2BD4C0;
+  --accent-tint:      #122B33;
+  --warn-bg:   #2A2114;  --warn-border: #5C4622;
+  --danger-bg: #2A1518;
+  --viz-null:  #64748B;
+  --viz-signal: #5B7CFF;
+  --viz-power:  #2BD4C0;
+  --viz-grid:  #1C2940;
+  --viz-axis:  #2A3A5C;
+  --viz-text:  #9AA8C0;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 18px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 48px -10px rgba(0, 0, 0, 0.6);
+}

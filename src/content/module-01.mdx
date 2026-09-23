@@ -1,0 +1,253 @@
+import { AnecdoteMachine } from '../components/AnecdoteMachine'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — meet Snakeoilizumab**
+>
+> Throughout this course we follow one fictional drug: *Snakeoilizumab*, a new agent that's
+> supposed to lower blood pressure. In this module no trial has been run yet. There's just a
+> promising idea, some excited colleagues, and a handful of patients who swear by it. By Module 4
+> we'll run the trial; by Module 8 we'll design it properly. For now, the question is: **how would you know whether it works?**
+
+## Section 1 — The patient who got better
+
+A colleague corners you at coffee. "I've started three patients on Snakeoilizumab. One of them:
+BP down 18 mmHg in two weeks. *Eighteen.* This stuff works."
+
+Statistics is needed because **patients vary, even without treatment.** Blood pressure bounces around within the same person from week to week (measurement
+noise, stress, sleep, salt, regression to the mean after a high reading). Across people, the same
+disease ranges from mild to severe. Some of your untreated patients will improve dramatically
+*this month*, on nothing at all.
+
+So one patient improving a lot is not evidence that the drug works. Untreated patients improve this much all the time.
+
+The widget below holds **300 simulated patients who received no treatment**. Their BP changes are natural variation only. Each press of the button picks out one of the success stories:
+
+<AnecdoteMachine seed={1859} />
+
+Anecdotes are not lies: the patient really did improve. But random variation alone produces some **impressive individual results**, so a single story, however sincere, cannot tell you whether the *drug* did anything. For that you need the whole distribution and a fair comparison. That is what this course is about.
+
+## Section 2 — Three ways to be wrong
+
+When a study (or a coffee-room claim) misleads, the cause is almost always one of three things.
+Keeping them apart is a huge part of critical appraisal:
+
+1. **Chance.** Random variation produced a difference that means nothing. (Whole groups can also differ by luck; Module 4 covers this.) *Statistics cannot stop chance, but it can measure how large a role chance could have played.*
+2. **Bias.** The comparison was unfair, though not necessarily on purpose. The treated patients
+   were younger, or sicker, or measured differently, or only the responders came back to clinic.
+   *Statistics can describe and sometimes adjust (Module 6), but the real fix is design:
+   randomisation, blinding, complete follow-up.* No analysis rescues a broken design.
+3. **Misinterpretation.** The data were fine; the reading of them wasn't. "Significant" mistaken
+   for "important", a confidence interval interpreted as a probability, a non-significant result read as
+   "no effect". *The fix is understanding what the numbers mean. Modules 4, 5 and 8 cover the common mistakes.*
+
+<MisconceptionCallout title="Common misconception">
+"Statistics can rescue a bad study." It cannot. Statistics quantifies the uncertainty *due to
+chance*, on the assumption that the data collection was sound. If the comparison was biased, even the best analysis only gives you a precise estimate of the wrong thing. Garbage in, garbage out.
+</MisconceptionCallout>
+
+## Section 3 — What statistics actually is (and isn't)
+
+Without the notation, statistics comes down to one idea: **before believing a difference is real, work out how big a difference chance alone could produce.** Almost everything in Modules 4–8 (standard errors, confidence intervals, p-values, power) is a way of answering that question.
+
+Two things statistics is *not*:
+
+- **Not a source of certainty.** No test proves the drug works. Every statistical result is uncertain and depends on assumptions; what statistics gives you is a measure of that uncertainty.
+- **Not a yes/no stamp.** Treating "p \< 0.05" as a yes/no verdict at the end of a study is one of the most damaging habits in medical research, because it hands the decision to an arbitrary cut-off. (Module 4 shows where 0.05 came from; Module 8 shows what the ritual costs.) The
+  numbers inform a judgement, but the judgement needs to be made by you.
+
+One reassurance: **the mathematics in this course is almost
+entirely optional.** Every key idea comes with an interactive picture (a slider, a simulation, a histogram). If you can judge how far to trust a weather forecast, you can follow all of it. The purpose of this course is not to understand formulae, but to understand
+the intuition and meaning behind what these formulae are trying to achieve, and what the results mean.
+*If you are using numbers to answer your research question, you need to understand what the numbers mean*.
+
+## Section 4 — The number that should come first
+
+Every study should start with this question, and few do:
+
+> **How big a difference would actually matter to patients?**
+
+Not "how big a difference do we expect" (optimism), and not "how big a difference can we detect
+with the patients we can get" (convenience). *How big a difference would change what a clinician
+does or how a patient fares?* For Snakeoilizumab, plausibly something like a **5 mmHg** systolic
+reduction would be important: less than that, side-effects, cost and pill burden probably outweigh
+the gain; at or above it, you and the patients would want to know.
+
+That number is the **minimum clinically important difference (MCID)**. It is **a clinical judgement, not a statistical output.** No formula produces it; it comes from your knowledge of the disease, the patients and the alternatives. Module 6 places it alongside other effect sizes, and Module 8 builds study design around it.
+
+It appears this early because it protects against a common mistake:
+
+<MisconceptionCallout title="The methodology theme of this course" variant="lens">
+**"Feasibility is king, science gets shoe-horned in afterwards."** The most common way clinical
+research goes wrong is not fraud or incompetence. It's a study built around what was *convenient*
+(the patients available, the clinic's database, the registrar's year) with the scientific question
+trimmed to fit. It asks, "what can I achieve with what is easily available?", instead of,
+"what do I need to answer the question that really matters?". The result is studies that use respectable methods but could never have answered their question. Doing it the right way round
+(question first, then the MCID, then a design big and clean enough to detect it, as Module 8 shows)
+is the most important habit this course aims to teach.
+</MisconceptionCallout>
+
+## Section 5 — How this course works
+
+Course outline:
+
+- **Module 2 — Describing data.** Before any inference: means, medians, spread, and why
+  *variation* is the central character of the whole story.
+- **Module 3 — Two philosophies of probability.** "Probability" means two different things, and the two main schools of statistics grew from them.
+- **Module 4 — From sample to inference.** Sampling distributions, standard
+  errors, confidence intervals, p-values. Run the Snakeoilizumab trial 10,000 times and watch
+  chance at work.
+- **Module 5 — Thinking Bayesian.** The question you actually wanted to ask ("what's the
+  probability it works?") and what it costs to answer.
+- **Module 6 — The linear model.** One model behind the menu of named tests; adjustment,
+  confounding, and where effect sizes live.
+- **Module 7 — One model, many tests.** Correlation, t-tests, ANOVA, the rank-based tests and GLMs are all versions of the linear model.
+- **Module 8 — Power & sample size.** The design-time module: how the MCID sets the sample size, and why underpowered studies mislead.
+- **Module 9 — Critical appraisal.** Applying the whole course to published papers.
+
+Each module is interactive-first: play with the widget, then read why it behaved that way. R code
+snippets are always optional, always collapsed, never required, but useful if you want to develop
+your skills.
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="R is a calculator (a first, gentle contact)"
+  code={`# R is, at minimum, a very good calculator:
+120 - 4
+(120 - 116) / 15
+
+# It can also make pretend patients - here, 300 BP changes
+# with NO treatment effect, just natural variation:
+set.seed(2024)
+changes <- rnorm(300, mean = 0, sd = 8)
+
+mean(changes)        # ~0: the truth
+max(-changes)        # the best "success story" in the room
+hist(changes)        # the whole picture - Module 2's subject`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m1-q1"
+  prompt="A colleague reports that one patient's BP fell 18 mmHg after starting Snakeoilizumab. What is the main reason this isn't evidence the drug works?"
+  options={[
+    {
+      text: 'The patient might be lying.',
+      correct: false,
+      feedback:
+        'Sincerity isn’t the problem. The improvement can be perfectly real and still mean nothing about the drug.',
+    },
+    {
+      text: 'BP varies substantially within and between untreated patients, so dramatic individual improvements occur by chance alone.',
+      correct: true,
+      feedback:
+        'Natural variation generates impressive individual stories for free: the anecdote machine produces them on demand from pure noise.',
+    },
+    {
+      text: '18 mmHg is too small a change to matter.',
+      correct: false,
+      feedback:
+        'Backwards: 18 mmHg would be a large effect, if it were an effect. The problem is attribution, not size.',
+    },
+    {
+      text: 'Case reports are not allowed in evidence-based medicine.',
+      correct: false,
+      feedback:
+        'That is dogma, not a reason. Case reports have real uses; establishing efficacy against background variation just isn’t one of them.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m1-q2"
+  prompt={'A trial’s treated group was, on average, ten years younger than its control group, and the analysis found the treatment "highly significant". The most fundamental problem is…'}
+  options={[
+    {
+      text: 'Chance: the p-value must be wrong.',
+      correct: false,
+      feedback:
+        'The p-value can be computed perfectly correctly from biased data. That is exactly what makes bias dangerous.',
+    },
+    {
+      text: 'Bias: the comparison was unfair by design, and no significance level fixes that.',
+      correct: true,
+      feedback:
+        'Confounding by age is a design problem: the analysis may be arithmetically perfect and still precisely estimate the wrong thing.',
+    },
+    {
+      text: 'Misinterpretation: significance was read as importance.',
+      correct: false,
+      feedback:
+        'A real problem (Module 4 covers it), but not the fundamental flaw here. The comparison itself was rigged before any interpretation happened.',
+    },
+    {
+      text: 'The sample was too small.',
+      correct: false,
+      feedback:
+        'Nothing in the story says so, and a bigger biased study just estimates the wrong thing more precisely.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m1-q3"
+  prompt="The MCID is best described as…"
+  options={[
+    {
+      text: 'The smallest difference a study can statistically detect.',
+      correct: false,
+      feedback:
+        'That is the minimum detectable effect: a property of the study design, not of patients. Module 8 contrasts the two directly.',
+    },
+    {
+      text: 'The effect size the investigators expect the treatment to have.',
+      correct: false,
+      feedback: 'That is optimism, the usual (wrong) substitute for the MCID in sample-size calculations.',
+    },
+    {
+      text: 'The smallest difference that would actually matter to patients: a clinical judgement made before the study.',
+      correct: true,
+      feedback:
+        'The MCID is owned by clinical judgement and fixed before data collection. Module 8 covers it in detail.',
+    },
+    {
+      text: 'A number calculated from the pilot data.',
+      correct: false,
+      feedback:
+        'Taking the target from your own data replaces clinical judgement with convenience. It defeats the MCID’s purpose.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m1-q4"
+  prompt={'"Feasibility is king, science gets shoe-horned in afterwards" describes which failure?'}
+  options={[
+    {
+      text: 'Choosing a research question, then designing a study big and rigorous enough to answer it.',
+      correct: false,
+      feedback: 'That is the correct order.',
+    },
+    {
+      text: 'Starting from the patients and resources conveniently available, then trimming the question to fit.',
+      correct: true,
+      feedback:
+        'Putting logistics first and science second quietly produces studies that never could have answered their question, dressed in respectable methods.',
+    },
+    {
+      text: 'Running too many statistical tests on one dataset.',
+      correct: false,
+      feedback:
+        'A real problem (multiplicity, which surfaces in Module 4’s world), but not what the phrase names.',
+    },
+    {
+      text: 'Publishing only significant results.',
+      correct: false,
+      feedback:
+        'Also real (publication bias, related to Module 8’s winner’s curse), but not what the phrase names.',
+    },
+  ]}
+/>

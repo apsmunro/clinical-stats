@@ -1,0 +1,487 @@
+import { PowerSimulator } from '../components/PowerSimulator'
+import { TwoDistributionPowerPlot } from '../components/TwoDistributionPowerPlot'
+import { SampleSizeCalculator } from '../components/SampleSizeCalculator'
+import { EffectSizeIllustrator } from '../components/EffectSizeIllustrator'
+import { WinnerCurseDemo } from '../components/WinnerCurseDemo'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab (continued)**
+>
+> Back with the same drug, same trial. But now rewind to *before* you ran it. You decide that the smallest BP
+> reduction worth caring about, the one you would not want to miss, is about **5 mmHg**. That
+> number is your **minimum clinically important difference (MCID)**, and it should drive everything
+> that follows. Blood pressure in your population has an SD of about 15 mmHg. **How many patients
+> per arm do you need** so that, if the drug really achieves an effect of MCID size, your trial
+> will actually detect it? Get this wrong and you waste years, money, and patients on a study that could never give a clear answer.
+
+## Section 1 — The question that comes first
+
+Power is a *design-time* idea. Once the data are in, it's too late: the study was either big
+enough or it wasn't. The most important statistical decision in a study has to be made before any data are collected, and in much clinical research it is skipped.
+
+Recall the methodology theme from the opening of the course: *feasibility is king, science gets
+shoe-horned in afterwards.* One of the most common ways that goes wrong is the underpowered study:
+a trial too small to detect the effect it was looking for, which then reports a non-significant
+result that gets misread as "no effect." That isn't evidence of no effect. It is an absence of evidence, produced by a study too small to find the effect.
+
+This module shows how to avoid this: decide, up front, how big the study must be.
+
+## Section 2 — Effect size, and the difference you must not miss (MCID)
+
+Before you can size a study you must answer a question statistics cannot answer for you: **how big
+a difference would actually matter to a patient?** This is a clinical judgement, and it has a
+name, the **minimum clinically important difference (MCID)**: the *smallest* effect that is large
+enough to be worth caring about. Anything below the MCID, even if it's real, isn't worth changing
+practice for. Anything at or above it is something you would not want to miss.
+
+The MCID is the most under-appreciated number in study design, and it should almost always be the
+effect you **power on.** The logic is worth making explicit, because it's where most underpowered
+studies go wrong:
+
+- **Power on the MCID** and your study is sensitive enough to catch *any* effect worth having.
+  A non-significant result then actually means something: "if there is any effect at all, it's
+  probably too small to matter." That is a useful, interpretable null result.
+- **Power on a larger, hoped-for effect** (which is tempting, because optimistic numbers demand
+  smaller, cheaper samples) and you build a study that can only see *big* effects. It will
+  routinely miss real, clinically worthwhile effects sitting between the MCID and your optimistic
+  guess. That study is underpowered for the effects that matter.
+
+So the discipline is simple to state and easy to skip: **decide the MCID first, then power for it.**
+
+Where does the MCID come from? Not from statistics. It comes from clinical reasoning,
+patient-important outcomes, prior literature, and sometimes formal anchor-based or
+distribution-based studies. It's a judgement you must be able to *defend*, not a number you read
+off your own data.
+
+How it's expressed depends on the outcome:
+
+- For a **continuous** outcome like BP, the MCID is a difference in means: e.g. you judge that
+  5 mmHg is the smallest systolic reduction worth acting on.
+- For **binary** outcomes it's a risk ratio, odds ratio, or risk difference (Module 6).
+- A **standardised** effect (difference ÷ SD, i.e. "how many standard deviations apart") lets you
+  compare across outcomes: Snakeoilizumab's MCID of 5 mmHg against an SD of 15 is ≈ 0.33 SD,
+  a smallish but real target.
+
+Set your MCID below and watch what it implies about how far apart the two groups' curves sit:
+
+<EffectSizeIllustrator defaultDiff={5} defaultSd={15} defaultMcid={5} />
+
+The key trade-off:
+**a smaller MCID is harder to detect and needs a bigger study.** The tension between the
+difference worth detecting and the sample you can feasibly recruit is the central problem in study design. Section 5 shows how this works out.
+
+<MisconceptionCallout title="Reviewer's lens" variant="lens">
+When you appraise a paper, don't just read its power statement. Find the **effect size it was
+powered to detect, then ask whether that was a defensible MCID or a number chosen for convenience.**
+A trial powered to detect a 15 mmHg drop has told you almost nothing about whether the drug
+delivers the 5 mmHg that actually matters. "Adequately powered" is meaningless until you know
+*powered for what.* As the cardiologist Professor Darrel Francis once said, "If you say a study
+is underpowered but cannot say what it should have been powered for, then the only thing underpowered
+is your brain".
+</MisconceptionCallout>
+
+## Section 3 — What statistical power actually is
+
+Here's the definition, using the ideas from Module 4.
+
+Suppose the drug *really does* lower BP by 5 mmHg. You run the trial. Because of sampling variation
+(Module 4), you won't always get a significant result; sometimes the chance noise masks the real
+effect. **Statistical power is the probability that your study comes out statistically significant
+*given that the effect is genuinely there*.**
+
+> **Power = P(significant result | the effect is real) = 1 − β**
+>
+> where β is the probability of *missing* a real effect (a false negative, or "Type II error").
+
+By convention, studies aim for **80% power**, meaning that if the effect is real, you'd detect it
+8 times in 10. An underpowered study at, say, 35% power is more likely to *miss* a real effect than
+to find it. You wouldn't run a diagnostic test that misses the disease two-thirds of the time; an
+underpowered trial is exactly that.
+
+<MisconceptionCallout title="These thresholds are conventions, not laws">
+There is nothing mathematically special about **80% power** or about **alpha = 0.05** (Module 4).
+They are widely-adopted habits, not boundaries handed down by nature: Fisher proposed 0.05 as a
+convenient rule of thumb, and 80% power is simply a pragmatic compromise between rigour and
+feasibility. Many trials deliberately aim for **90% power when it is feasible**, accepting a larger
+sample in exchange for a better chance of detecting a real effect (and a less ambiguous null). The
+right level is a judgement about the cost of a missed effect versus the cost of a bigger study.
+Make it deliberately; don't just inherit 80/0.05 by reflex.
+</MisconceptionCallout>
+
+We make this concrete with the same simulation engine from Module 4, but now with a *real effect
+switched on*, and a significance decision applied to each simulated trial. The proportion of trials
+that come out significant **is** the power.
+
+Try this: with effect 5, SD 15, n 40, run 1,000 trials. Most are grey (missed).
+Now drag n up to ~150 and run again: most trials turn teal as power climbs past 80%.
+
+<PowerSimulator defaultEffect={5} defaultSd={15} defaultN={40} defaultAlpha={0.05} seed={7001} />
+
+## Section 4 — The four levers
+
+Power depends on four linked quantities; change one and at least one other must change:
+
+1. **Effect size**: bigger true effect → easier to detect → more power.
+2. **Variability (SD)**: noisier data → harder to detect → less power. *Variance is king*, again:
+   the same lever that widened the sampling distribution in Module 4 is what reduces your power here.
+3. **Sample size (n)**: more patients → smaller standard error → more power. This is the lever you
+   usually control.
+4. **Significance threshold (alpha)**: a stricter alpha (e.g. 0.01) makes significance harder to
+   reach → less power, trading false positives for false negatives.
+
+The key idea, linking back to Module 4: **power is about how cleanly the "no effect" and
+"real effect" sampling distributions separate.** Anything that pushes them apart (bigger effect,
+less noise, bigger n) raises power. Drag the sliders, especially n, and watch the β region shrink
+as the curves slide apart:
+
+<TwoDistributionPowerPlot defaultEffect={5} defaultSd={15} defaultN={40} defaultAlpha={0.05} />
+
+## Section 5 — From power to sample size
+
+In practice you flip the question around. You *fix* the things you can argue for (**the MCID**
+from Section 2, the expected SD, alpha at 0.05, power at 80%) and **solve for the sample size
+n**. That's a sample-size calculation, and it's what a grant or ethics committee wants to see. The
+effect you plug in should be the MCID: size the study to catch the smallest difference worth
+catching.
+
+For Snakeoilizumab (MCID 5 mmHg, SD 15, alpha 0.05, 80% power) the answer is about **142 patients per arm**: far more than the 40 the original trial used. The
+original trial was badly underpowered to detect the very effect that would have mattered.
+
+The mirror-image question is just as useful: for a sample size you're *stuck with* (limited
+patients, a rare disease), what is the **minimum detectable effect (MDES)**, the smallest true
+effect you'd have a fair chance of finding? Then compare it to your MCID. **If the MDES is larger
+than the MCID, your study cannot reliably see the smallest effect that matters.** It is
+underpowered for its clinical purpose, however large it looks.
+
+<SampleSizeCalculator />
+
+### A worked example with a binary outcome
+
+So far we've sized a *continuous* outcome (mean BP). Many clinical outcomes are **binary** (cured
+or not, admitted or not, alive or dead) and the same logic applies with one extra complication.
+
+Stick with Snakeoilizumab, but change the endpoint to a binary one: the **proportion of patients
+achieving controlled BP** (systolic \< 140 mmHg) at 12 weeks. Suppose **40% achieve control on
+placebo**. Now you state the MCID as an absolute difference: the smallest improvement worth caring
+about is, say, lifting that to **55% on treatment**, a **15 percentage-point** risk difference
+(equivalently a risk ratio of about 1.4). Powering for that (alpha 0.05, 80% power) needs about **170 patients per arm**. Try it in the calculator above: switch the outcome toggle to *binary
+proportions*.
+
+The complication: for a binary outcome, **the required sample size depends on the baseline event
+rate, not just the size of the difference.** The variability of a proportion is largest near 50%
+and shrinks towards 0% or 100%, so the *same* absolute MCID costs a different number of patients
+depending on where the baseline sits. A 15-point difference from a 5% baseline (5% → 20%) needs a
+very different sample from the same 15 points around 40% → 55%. And **rare events are expensive**:
+outcomes that happen to few patients demand large samples or long follow-up, which is exactly why
+event-driven trials (e.g. mortality) are so big. The practical lesson connects straight back to the
+fallback options below: if your binary outcome is rare, a more common (but still patient-important)
+endpoint, or a composite, may be the honest way to reach feasible power.
+
+### When you can't afford to power on the MCID
+
+This happens often in real studies. Powering on a small
+MCID often demands a sample you simply cannot recruit. When that happens, **do not quietly inflate
+the effect size to a number you can afford**. That hides an underpowered study behind a respectable-looking calculation. Instead, work through the legitimate options, roughly in order of
+preference:
+
+1. **Increase feasibility**: multi-centre recruitment, longer enrolment, collaborative networks,
+   registry or routine-data designs.
+2. **Reduce the variance**: a more precise or less noisy outcome measure, repeated measures, or a
+   more homogeneous population shrinks the SD and so shrinks the required n (*variance is king*,
+   again).
+3. **Rethink the outcome**: choose a different endpoint where a clinically meaningful change is
+   *larger relative to its variability* (a better signal-to-noise ratio), or a more responsive
+   measure. Often the smartest move is changing *what* you measure, not how many patients you chase.
+4. **Reconsider whether the study should run at all**: if no honest design can detect the MCID,
+   the ethical answer may be not to expose patients to a study that cannot answer its question, and
+   to redirect the effort.
+
+The unifying rule: **the MCID is fixed by clinical reality, not by your budget.** When feasibility
+and the MCID collide, you change the design. Never the definition of what matters.
+
+## Section 6 — Why underpowered studies are worse than you think
+
+A weak study isn't just "less likely to find things." It causes harm in two ways:
+
+**1. It misses real effects.** The obvious harm: a genuinely effective treatment is tested in a
+study too small to detect it, gets a non-significant result, and is wrongly written off. Patients
+lose a treatment that worked.
+
+**2. It exaggerates the effects it does find (the winner's curse).** This is the counter-intuitive
+one. In an underpowered study, the *only* way to cross the significance line is to get a sampling
+fluke that happens to inflate the estimate. So the results that reach significance systematically *overstate* the true effect, sometimes by a lot, occasionally with the wrong sign
+entirely. (These are sometimes called **Type M**, magnitude, and **Type S**, sign, errors.)
+Underpowered literatures are therefore full of exciting effect sizes that shrink or vanish on
+replication.
+
+See it for yourself. The true effect below is fixed at 5 mmHg. At n = 30 the "published"
+(significant) trials average well above 5. Drag n up and watch the inflation collapse toward the
+truth:
+
+<WinnerCurseDemo trueEffect={5} sd={15} defaultN={30} seed={6001} />
+
+So an underpowered study is likely to mislead either way: false reassurance if the result is null, an inflated effect if it is significant. This is a genuine **research-ethics**
+issue, not just a statistical nicety: enrolling patients in a study that cannot answer its question
+exposes them to risk for no scientific gain.
+
+<MisconceptionCallout title="Common misconception">
+"My study was non-significant, so the treatment doesn't work." A non-significant result from an
+underpowered study is *uninformative*, not evidence of no effect. Absence of evidence is not
+evidence of absence, especially when you never had the power to find it. This goes all the way
+back to understanding what a p value represents — *how surprising is this data given I assumed there
+is no true difference?* If you understand a p value is p(data | H0) it stops you falling into the trap
+of assuming a large p value always implies there is no true difference between groups.
+</MisconceptionCallout>
+
+## Section 7 — Power pitfalls
+
+<MisconceptionCallout title="The post-hoc power fallacy">
+Calculating "observed power" *after* the study from the observed effect tells you nothing new.
+It's just a re-expression of the p-value, and it's circular. Power must be computed from the effect
+you *care about* (a clinical judgement), set *before* the study. Reviewers who ask for post-hoc
+power on a non-significant result are asking the wrong question; the right tools are confidence
+intervals (Module 4) and a pre-specified design.
+</MisconceptionCallout>
+
+Two more, briefly:
+
+- **Powering above the MCID** (choosing a larger, more convenient effect than the smallest one
+  worth detecting) is the most common cause of hidden underpowering: the calculation looks fine, but the study cannot detect the effect that matters. Always power on the MCID, and
+  if you can't, be transparent about the gap rather than hiding it in the effect size.
+- **Ignoring attrition and clustering.** Real sample sizes must inflate for dropout, and account
+  for non-independence (e.g. cluster trials). Naive n is a floor, not the final answer.
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="Sample size the analytic way (power.t.test)"
+  code={`power.t.test(delta = 5,        # effect worth detecting (mmHg)
+             sd    = 15,       # expected SD
+             sig.level = 0.05,
+             power = 0.80,
+             type  = "two.sample")
+# n is per arm  ->  ~142`}
+/>
+
+<CollapsibleRSnippet
+  caption="Power by simulation (the same logic as the interactive widget)"
+  code={`set.seed(123)
+sim_power <- function(n, true_diff = 5, sd = 15, alpha = 0.05, reps = 5000) {
+  hits <- replicate(reps, {
+    control      <- rnorm(n, 120,             sd)
+    intervention <- rnorm(n, 120 - true_diff, sd)
+    t.test(intervention, control)$p.value < alpha
+  })
+  mean(hits)               # estimated power
+}
+sim_power(40)              # ~0.35  -> badly underpowered
+sim_power(142)             # ~0.80`}
+/>
+
+<CollapsibleRSnippet
+  caption="The pwr package (standardised effect sizes)"
+  code={`library(pwr)
+pwr.t.test(d = 5/15, sig.level = 0.05, power = 0.80)  # d = effect / SD`}
+/>
+
+<CollapsibleRSnippet
+  caption="Binary outcome: sizing on an absolute risk-difference MCID"
+  code={`# MCID: lift BP-control rate from 40% (placebo) to 55% (treatment)
+power.prop.test(p1 = 0.40, p2 = 0.55,
+                sig.level = 0.05, power = 0.80)
+# n is per arm  ->  ~170
+
+# Notice the baseline matters: the SAME 15-point MCID near a rare baseline
+power.prop.test(p1 = 0.05, p2 = 0.20, sig.level = 0.05, power = 0.80)$n
+# a very different n: proportions vary most near 50%`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m8-q1"
+  prompt="A trial has 80% power to detect a 5 mmHg difference. What does that mean?"
+  options={[
+    {
+      text: 'There’s an 80% chance the drug lowers BP by 5 mmHg.',
+      correct: false,
+      feedback:
+        'Power says nothing about whether the drug works. It assumes a true effect and asks how often the study would detect it.',
+    },
+    {
+      text: 'If the true effect is 5 mmHg, the study has an 80% chance of returning a statistically significant result.',
+      correct: true,
+      feedback:
+        'Power is P(significant | the effect is real). It’s a property of the study design under an assumed true effect, not a probability about the drug, the patients, or the p-value.',
+    },
+    {
+      text: '80% of patients will respond to the drug.',
+      correct: false,
+      feedback:
+        'Power is about the study detecting an average effect, not about individual patients responding.',
+    },
+    {
+      text: 'The p-value will be below 0.20.',
+      correct: false,
+      feedback:
+        'Power makes no promise about the p-value you will actually observe, only the long-run chance of crossing the significance threshold if the effect is real.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m8-q2"
+  prompt="You keep effect size, alpha and n fixed but recruit a population with higher BP variability (larger SD). Power will…"
+  options={[
+    {
+      text: 'Increase.',
+      correct: false,
+      feedback:
+        'The opposite: more noise makes the same real effect harder to distinguish from chance.',
+    },
+    {
+      text: 'Decrease.',
+      correct: true,
+      feedback:
+        'More noise widens both sampling distributions, so they overlap more and the real effect is harder to detect. Variance is king: the same lever from Module 4, now reducing your power.',
+    },
+    {
+      text: 'Stay the same.',
+      correct: false,
+      feedback:
+        'Variability is one of the four levers; power depends on it directly. Watch the curves overlap as you drag SD up in the two-distribution widget.',
+    },
+    {
+      text: 'Become exactly 0.05.',
+      correct: false,
+      feedback:
+        '0.05 is alpha (the false-positive rate under the null), not the power. Power only falls toward alpha as the effect, relative to noise, approaches zero.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m8-q3"
+  prompt="A small trial (n = 30/arm) reports a significant and surprisingly large treatment effect. Why be cautious?"
+  options={[
+    {
+      text: 'Small significant studies are always wrong.',
+      correct: false,
+      feedback:
+        'Not always. But the winners are systematically biased upward at low power, which is the real reason for caution.',
+    },
+    {
+      text: 'In an underpowered study, the significant results that get through tend to overstate the true effect (winner’s curse).',
+      correct: true,
+      feedback:
+        'At low power, only chance-inflated estimates cross the significance line, so "winners" exaggerate the effect (and occasionally get the sign wrong): Type M and Type S errors.',
+    },
+    {
+      text: 'A significant result with small n is impossible.',
+      correct: false,
+      feedback:
+        'It’s entirely possible. It just tends to come from estimates that are inflated by sampling luck.',
+    },
+    {
+      text: 'You should recompute the observed (post-hoc) power to confirm it.',
+      correct: false,
+      feedback:
+        'This is the post-hoc power fallacy: observed power is just a re-expression of the p-value, and it’s circular.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m8-q4"
+  prompt="Your trial came back non-significant. Which conclusion is sound?"
+  options={[
+    {
+      text: 'The treatment definitely has no effect.',
+      correct: false,
+      feedback:
+        'Non-significant ≠ no effect, particularly when power was low. Absence of evidence is not evidence of absence.',
+    },
+    {
+      text: 'The data are consistent with a range of effects; if the study was underpowered, a real effect may simply have been missed: look at the confidence interval.',
+      correct: true,
+      feedback:
+        'The confidence interval (Module 4) tells you which effects remain plausible, often including clinically important ones the study had no power to detect.',
+    },
+    {
+      text: 'Re-run the analysis with a more lenient alpha until it’s significant.',
+      correct: false,
+      feedback:
+        'That’s p-hacking. Adjusting the rules after seeing the data destroys the meaning of the test.',
+    },
+    {
+      text: 'Compute observed power to decide if the null is true.',
+      correct: false,
+      feedback:
+        'The post-hoc power fallacy again: observed power adds nothing beyond the p-value you already have. Use the confidence interval instead.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m8-q5"
+  prompt="You're reviewing a trial that recruited the sample it could feasibly get and powered itself to detect a 15 mmHg BP reduction, though the smallest clinically worthwhile difference is around 5 mmHg. It reports a non-significant result. What's the most appropriate appraisal?"
+  options={[
+    {
+      text: 'The drug clearly doesn’t work: the trial was adequately powered.',
+      correct: false,
+      feedback:
+        '"Adequately powered" is meaningless without asking powered for what. Powered for 15 mmHg, the trial was effectively blind to the 5 mmHg that matters.',
+    },
+    {
+      text: 'The trial was powered above the MCID, so it could only detect implausibly large effects; a clinically important 5 mmHg effect could easily have been missed, and the null is uninformative.',
+      correct: true,
+      feedback:
+        'Powering on 15 mmHg when the MCID is 5 mmHg builds a study blind to the difference that matters, so a non-significant result tells you little. The fix was to power on the MCID, and if infeasible, change the design, not the target.',
+    },
+    {
+      text: 'The effect size choice doesn’t matter as long as power was 80%.',
+      correct: false,
+      feedback:
+        '80% power to detect an effect nobody expects is worthless. The effect size in the calculation is the whole question.',
+    },
+    {
+      text: 'They should report the observed power to settle it.',
+      correct: false,
+      feedback:
+        'The post-hoc power fallacy: circular and uninformative. The confidence interval and the design-time effect-size choice are what to appraise.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m8-q6"
+  prompt="Powering your study on the MCID turns out to require far more patients than you can recruit. Which response is NOT legitimate?"
+  options={[
+    {
+      text: 'Quietly increase the assumed effect size to a value that brings n within reach.',
+      correct: true,
+      feedback:
+        'Right: this is the trap. Inflating the effect size to fit your budget hides an underpowered study inside a respectable calculation. The MCID is fixed by clinical reality, not by your sample size.',
+    },
+    {
+      text: 'Seek extra sites or longer recruitment to raise feasibility.',
+      correct: false,
+      feedback:
+        'This is a legitimate response: raising feasibility honestly is the first option to explore. (The question asks which response is NOT legitimate.)',
+    },
+    {
+      text: 'Switch to a more precise outcome to reduce variance and the required n.',
+      correct: false,
+      feedback:
+        'Also legitimate: reducing variance shrinks the required n without touching the MCID. Variance is king. (The question asks which response is NOT legitimate.)',
+    },
+    {
+      text: 'Reconsider whether the study can ethically answer its question at all.',
+      correct: false,
+      feedback:
+        'Also legitimate: sometimes the honest answer is that the study shouldn’t run, rather than exposing patients to a study that cannot answer its question. (The question asks which response is NOT legitimate.)',
+    },
+  ]}
+/>

@@ -1,0 +1,14 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="REP mark">
+  <defs>
+    <linearGradient id="inkrep" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0F1830"/>
+      <stop offset="1" stop-color="#0A0F1E"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#inkrep)"/>
+  <!-- faint baseline + bell hint -->
+  <path d="M28,92 C44,92 49,89 56,74 C60,64 61,56 64,56 C67,56 68,64 72,74 C79,89 84,92 100,92"
+        fill="none" stroke="#2BD4C0" stroke-width="2" opacity="0.35"/>
+  <text x="64" y="78" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="46"
+        font-weight="600" letter-spacing="-1" fill="#FFFFFF">REP</text>
+</svg>

@@ -1,0 +1,357 @@
+import { SimulationEngine } from '../components/SimulationEngine'
+import { ReRandomiseDemo } from '../components/ReRandomiseDemo'
+import { CICoveragePlot } from '../components/CICoveragePlot'
+import { TailAreaPlot } from '../components/TailAreaPlot'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab**
+>
+> You have finally run a small two-arm randomised trial of a new blood-pressure drug, *Snakeoilizumab*,
+> against placebo. 40 patients per arm. Your result: the treated group's mean systolic BP was
+> **4 mmHg lower** than placebo. Is that a real effect, or just the luck of who happened to land
+> in which arm? Everything below is about answering that question.
+
+## Section 1 — The problem of the single sample
+
+Except in rare circumstances, we can never be sure of the effect of a medication on *one individual*.
+That is because we either give them a medication or not, and when we observe the effect we are unable
+to compare what happened to them to the alternative since it never happened! This is what prevents us
+from determining the impact of interventions in clinical practice; we have no *counterfactual* to
+compare it to. Whilst we cannot usually do this with individuals, **we can create counterfactuals for groups.**
+We can run trials with many people in them, then compare the totals or averages for each group to
+try and create a counterfactual.
+
+Now you ran the trial for snakeoilizumab once. You got one number: a difference in means of −4 mmHg.
+But you didn't actually want to know about *these 80 people*. You wanted to know about blood-pressure
+patients in general. You are trying to learn about a whole population from one small sample.
+
+Here's the difficulty: even if Snakeoilizumab did *absolutely nothing*, you would almost
+never get exactly 0 mmHg difference between the arms due to natural variation (remember - *variance is king*.)
+Randomisation splits people into two groups, but the two groups are never identical: by pure chance one arm gets
+slightly more high-BP patients than the other. That chance imbalance produces a difference in means
+*all on its own*, with no drug effect at all.
+
+Try it. The patients below never change; only which arm they land in does:
+
+<ReRandomiseDemo />
+
+So the real question isn't "is the difference exactly zero?" It's: **how big a difference could
+chance alone plausibly produce, and is −4 mmHg bigger than that?**
+
+To answer it, we need to know what "chance alone" looks like. And the cleanest way to *see* chance
+alone is to simulate it.
+
+## Section 2 — Building a sampling distribution
+
+Let's make the thought experiment concrete. Suppose Snakeoilizumab truly has **no effect**. We can
+imagine running the *same* trial over and over (fresh 40-vs-40 patients each time) and each time
+writing down the difference in mean BP. After many repeats we'd have a whole *distribution* of
+differences produced by chance alone. That distribution is called the **sampling distribution**,
+and it is probably the most important idea in frequentist statistics. Remember, the whole philosophy
+of frequentism is based on the idea that we could theoretically do what we have done in this simulation
+and repeat the experiment over and over again, then draw inference from the patterns we would observe.
+
+Here is exactly the simulation from the lectures, but now you control it.
+
+<SimulationEngine
+  defaultTrueDiff={0}
+  defaultSd={15}
+  defaultN={40}
+  observedEffect={-4}
+  seed={1001}
+/>
+
+Three things to notice as you play, and they recur for the rest of the course:
+
+1. **More repeats → a smoother, more stable shape.** With 50 trials it's lumpy; by 10,000 it's a
+   clean bell-shaped normal distribution. The *shape* was always there. More data just reveals it.
+2. **Bigger SD → a wider distribution.** Noisier patients mean chance can throw up bigger spurious
+   differences. *Variance is king*: here's why it matters for inference, not just description.
+3. **Bigger n → a narrower distribution.** More patients per arm pins down the mean more tightly,
+   so chance differences shrink. This is the basis of Module 8 on power and sample size.
+
+Why a bell-shape, by the way? Because each trial's result is an *average* of many patients, and averages of many independent values tend towards this shape, whatever the patients themselves look like. That's the **central limit theorem**, which underpins the inference in this module. (This is the explanation Module 2 promised.)
+
+## Section 3 — The standard error
+
+The width of that sampling distribution has a name: the **standard error (SE)**. It is simply the
+standard deviation *of the sampling distribution*, a measure of how much your estimate would
+bounce around if you repeated the study.
+
+Don't confuse it with the standard deviation (SD):
+
+- **SD** describes the spread of *individuals* in your data (how different patients are from each other).
+- **SE** describes the spread of your *estimate* (how different your trial result would be on repetition).
+
+For a difference in means, the SE shrinks as you collect more data and grows as the data get
+noisier, as you just saw. A small, but very important detail is that the shrinkage
+goes with the *square root* of n, not n itself. Averaging more patients does cancel noise, but the
+errors only partially offset each other, so quadrupling the sample merely halves the SE. (This is
+why big precision is expensive, and why Module 8's sample sizes climb so fast.) That single
+relationship (*more n, less noise → smaller SE → sharper inference*) is the driving factor behind
+confidence intervals, p-values, and statistical power alike.
+
+Watch the empirical SE (measured from the simulation) track the theoretical formula as you drag
+n and SD:
+
+<SimulationEngine
+  defaultTrueDiff={0}
+  defaultSd={15}
+  defaultN={40}
+  lockTrueDiff
+  showSeReadout
+  seed={1002}
+/>
+
+## Section 4 — Confidence intervals
+
+In real life you can't repeat the trial 10,000 times. You get **one** sample. The confidence
+interval is the tool that applies the sampling-distribution idea to that single study. A 95% CI
+is, roughly, your estimate give-or-take about two standard errors: this gives a range of possible values
+for the true effect that would be compatible with your data.
+
+Your trial would report: *−4 mmHg (95% CI −10.7 to +2.7)*. That's the observed difference,
+give-or-take about two standard errors (2 × 3.4 ≈ 6.7).
+
+This is a commonly misinterpreted object in medical statistics, so we treat the interpretation
+carefully and *visually*. Below, you are allowed godlike knowledge for once: **you set the true effect**,
+then run 100 trials and see where their confidence intervals fall relative to it.
+
+<CICoveragePlot trueDiff={5} sd={15} n={40} nIntervals={100} seed={2001} />
+
+**What a 95% confidence interval means:** if you repeated this study many times, about 95% of the
+intervals you'd construct would contain the true effect. Confidence is a property of the
+*procedure*, not of your one interval.
+
+<MisconceptionCallout title="Common misconception">
+A 95% CI does **not** mean "there's a 95% probability the true effect is between −10.7 and +2.7."
+Once you've computed your specific interval, the true effect is either in it or it isn't: there's
+no probability left to assign. (The "95% probability the value is in here" interpretation is the
+*Bayesian credible interval*, which we will look at in Module 5, and contrasting the two is one of the
+course's key learning objectives.)
+</MisconceptionCallout>
+
+A practical, less technical reading is to ignore the 95% part and treat the interval as "the range of true effects reasonably compatible with the result you observed." −10.7 to +2.7 includes a worthwhile drop, no effect, and a small rise, so this trial, on its own, is inconclusive.
+
+## Section 5 — The p-value and NHST
+
+Now we can finally define the mystical p-value properly, and you'll see it's just *reading off the sampling
+distribution* from Section 2.
+
+P values are most often generated from Null-hypothesis significance testing (NHST), which has a simple logic:
+
+1. Assume the **null hypothesis** is true: here, the assumption in our testing is that Snakeoilizumab has no effect
+   (true difference = 0). That's the sampling distribution centred on 0 you already built.
+2. Ask: under that assumption, how often would chance alone produce a result **as extreme as, or
+   more extreme than**, my observed −4 mmHg?
+3. That probability is the **p-value**.
+
+<TailAreaPlot sd={15} n={40} observedEffect={-4} tails={2} seed={3001} />
+
+**The correct definition**, stated carefully:
+
+> The p-value is the probability of observing data *at least as extreme as* what you saw,
+> **if the null hypothesis were true**. In symbols, P(data | H₀).
+
+Two common wrong definitions, both classic exam "trap" answers:
+
+<MisconceptionCallout title="Common misconceptions">
+- A p-value is **not** "the probability that the results are due to chance."
+- A p-value is **not** "the probability that the null hypothesis is true." It says nothing directly
+  about P(H₀ | data); for that you'd need Bayes (Module 5).
+
+A small p-value means *your data would be surprising if there were no effect*. It does not mean
+there's definitely an effect, and it does not say how *big* any effect is.
+</MisconceptionCallout>
+
+And the threshold (p \< 0.05) is a **convention, not a law of nature**: an arbitrary line Fisher
+suggested, not a boundary between true and false. A p-value of 0.04 and 0.06 are almost the same
+evidence; the cliff between "significant" and "not" is an arbitrary definition we impose for weak
+historical reasons. Much has been written about the harm of splitting results into "significant" and "not significant" in medical statistics, and the debate is lively and worth reading.
+
+## Section 6 — What inference does *not* do
+
+Knowing these limits will help you avoid bad research. Statistical inference does **not**:
+
+- **Prove causation.** That comes from study *design* (randomisation, control of confounding), not
+  from any test. A tiny p-value in an observational study is still just an association.
+- **Tell you whether an effect is clinically significant.** −4 mmHg can be "statistically
+  significant" and clinically trivial, or non-significant yet potentially important but
+  under-powered. Significance ≠ importance. (Importance is your judgement; the stats only
+  quantify uncertainty.)
+- **Tell you your data are any good.** Garbage in, garbage out: inference assumes your
+  measurements, randomisation and follow-up were sound. It cannot rescue a biased study.
+
+> *Inference quantifies uncertainty due to chance. It does not certify truth, importance, or
+> quality; those are yours to argue for.*
+
+## Optional R code
+
+These mirror the code on the lecture slides, so live-course and self-study reinforce each other.
+They're entirely optional; nothing later depends on them.
+
+<CollapsibleRSnippet
+  caption="Simulate the sampling distribution under the null"
+  code={`set.seed(123)
+n_patients    <- 40      # per arm
+n_simulations <- 10000
+true_diff     <- 0       # null: no effect
+sd_bp         <- 15      # variance is king
+
+mean_diffs <- numeric(n_simulations)
+for (i in seq_len(n_simulations)) {
+  control      <- rnorm(n_patients, mean = 120,             sd = sd_bp)
+  intervention <- rnorm(n_patients, mean = 120 + true_diff, sd = sd_bp)
+  mean_diffs[i] <- mean(intervention) - mean(control)
+}
+
+hist(mean_diffs, breaks = 50,
+     main = "Sampling distribution under the null",
+     xlab = "Difference in mean BP (mmHg)")
+abline(v = -4, col = "red", lwd = 2)   # our observed result`}
+/>
+
+<CollapsibleRSnippet
+  caption="Standard error, confidence interval and p-value the easy way"
+  code={`# one simulated trial with a real 5 mmHg effect
+set.seed(1)
+control      <- rnorm(40, mean = 120, sd = 15)
+intervention <- rnorm(40, mean = 115, sd = 15)
+
+t.test(intervention, control)
+# read off: estimate (difference in means),
+#           95% CI, and p-value`}
+/>
+
+<CollapsibleRSnippet
+  caption="Empirical p-value from the simulation (how extreme is −4 under the null?)"
+  code={`mean(abs(mean_diffs) >= 4)   # two-tailed empirical p-value`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m4-q1"
+  prompt="Your trial reports a difference of −4 mmHg, 95% CI (−10.7 to +2.7). Which statement is correct?"
+  options={[
+    {
+      text: 'There is a 95% probability the true effect lies between −10.7 and +2.7.',
+      correct: false,
+      feedback:
+        "This is the tempting Bayesian-sounding reading; that's a credible interval (Module 5). Once your specific interval is computed, the true effect is either in it or not. There's no probability left to assign.",
+    },
+    {
+      text: 'If the study were repeated many times, about 95% of such intervals would contain the true effect.',
+      correct: true,
+      feedback:
+        'This is the frequentist definition. Confidence is a property of the procedure over repetition, not of your one interval.',
+    },
+    {
+      text: '95% of patients had a BP change between −10.7 and +2.7 mmHg.',
+      correct: false,
+      feedback:
+        'This confuses the spread of the estimate with the spread of patients. The SE vs SD distinction from Section 3.',
+    },
+    {
+      text: 'The effect is not significant, so the drug definitely does nothing.',
+      correct: false,
+      feedback:
+        'This over-reads a wide, inconclusive interval as proof of no effect. The interval includes a worthwhile drop, nothing, and a small rise; the trial is inconclusive, not negative.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m4-q2"
+  prompt="You increase the sample size from 40 to 400 per arm, keeping everything else the same. The sampling distribution of the difference in means will…"
+  options={[
+    {
+      text: 'Get wider.',
+      correct: false,
+      feedback:
+        "The opposite: more patients pin down each arm’s mean more tightly, so chance differences shrink and the distribution narrows.",
+    },
+    {
+      text: 'Get narrower.',
+      correct: true,
+      feedback:
+        "More patients pin down each arm’s mean, shrinking the standard error and narrowing the sampling distribution. This is precisely why larger trials can detect smaller effects: the basis of statistical power (Module 8).",
+    },
+    {
+      text: 'Stay the same width but shift left.',
+      correct: false,
+      feedback:
+        "Sample size affects the width (the SE), not the centre. The centre is set by the true effect, which hasn’t changed.",
+    },
+    {
+      text: 'Become uniform.',
+      correct: false,
+      feedback:
+        'No. Averaging makes things more bell-shaped, not less; with more data, the sampling distribution becomes a narrower, cleaner normal curve.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m4-q3"
+  prompt={`A colleague says "p = 0.03 means there’s a 97% chance the drug works." What’s wrong?`}
+  options={[
+    {
+      text: "Nothing: that’s the definition of a p-value.",
+      correct: false,
+      feedback:
+        "It isn’t! The p-value assumes the null is true and asks how surprising the data are. It cannot be read as a probability about the hypothesis.",
+    },
+    {
+      text: "The p-value is P(data | H₀), not P(H₀ is false | data); it doesn’t give the probability the drug works.",
+      correct: true,
+      feedback:
+        "The p-value assumes the null is true and asks how surprising the data are. It cannot be flipped into a probability that the hypothesis is true. That flip requires a prior and Bayes’ theorem (Module 5).",
+    },
+    {
+      text: 'They should have used 0.05 as the threshold.',
+      correct: false,
+      feedback:
+        "The threshold isn’t the issue, and 0.05 is a convention, not a law. The error is in what the p-value is claimed to mean.",
+    },
+    {
+      text: "p-values can’t be that small with only 80 patients.",
+      correct: false,
+      feedback:
+        'They can: a small trial with a large or lucky difference can produce a small p-value. Sample size limits power, not the possible range of p-values.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m4-q4"
+  prompt="Two slider experiments give the same observed difference (−4 mmHg), but trial X used SD = 8 and trial Y used SD = 20. Which has the smaller p-value?"
+  options={[
+    {
+      text: 'Trial X (less noise).',
+      correct: true,
+      feedback:
+        'Lower variance gives a narrower null distribution, so −4 sits further into the tail → smaller p-value. Same effect, less noise, stronger evidence. Variance is king.',
+    },
+    {
+      text: 'Trial Y (more noise).',
+      correct: false,
+      feedback:
+        'More noise widens the null distribution, so −4 sits closer to its middle: a larger p-value, not smaller.',
+    },
+    {
+      text: 'Identical: same observed difference.',
+      correct: false,
+      feedback:
+        'The p-value depends on how extreme the difference is relative to the noise, not on the difference alone. Try it in the tail-area widget: drag SD and watch p change with the observed effect fixed.',
+    },
+    {
+      text: 'Cannot be determined.',
+      correct: false,
+      feedback:
+        'It can: with the observed difference and n fixed, the only thing that differs is the noise, and less noise always makes the same difference more surprising under the null.',
+    },
+  ]}
+/>

@@ -1,0 +1,424 @@
+import { PearsonAsSlope } from '../components/PearsonAsSlope'
+import { DummyCodingDemo } from '../components/DummyCodingDemo'
+import { RankTransformDemo } from '../components/RankTransformDemo'
+import { LinkFunctionExplorer } from '../components/LinkFunctionExplorer'
+import { TestCollapseMap } from '../components/TestCollapseMap'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab (continued)**
+>
+> One last visit to our trial, this time to finish something Module 6 started. We claimed
+> a t-test was "just a linear model", and promised that the whole menu of named tests (correlation,
+> ANOVA, the rank-based tests, logistic regression) was the same model in disguise. This module shows how. We'll also widen the trial slightly: imagine you ran **three** arms — placebo,
+> low dose, and high dose, and that one of your outcomes, **length of hospital stay**, is badly
+> skewed (a few patients stay for weeks). These are the situations where people usually use ANOVA and "non-parametric" tests. Both turn out to be the linear model with slightly different inputs.
+
+## Section 1 — One model, three dials
+
+Module 6 said that once you know the linear model, the named tests follow. This module shows how:
+
+**Almost every classical statistical test you have heard of is the linear model**
+`outcome = a + b × predictor + noise` **with three dials set differently.**
+
+The rest of this module works through the three dials:
+
+1. **What is the predictor?** Continuous (→ correlation, regression) or categorical (→ t-test, ANOVA).
+   A categorical predictor is just turned into 0/1 "dummy" columns, exactly as we did with `treated`
+   in Module 6.
+2. **Do we use the data, or its ranks?** Run the model on the raw numbers and you get the familiar
+   "parametric" tests. Run the *identical* model on the **ranks** of the data and you get the "non-parametric" tests.
+3. **What link connects the line to the outcome?** For a normal outcome, none (the line *is* the
+   prediction). For a yes/no outcome, the logit link from Module 6's logistic regression. For counts,
+   a log link. This is the step up to **generalised linear models (GLMs)**.
+
+Set the three dials and you get the named test. The names (Pearson, Student, Fisher, Wilcoxon) come from before cheap computing, when each special case needed its own shortcut formula. Now you only need the model and the three dials.
+
+Why does this matter? Because it means **you already understand every one of these
+tests.** Everything from Module 4 (standard errors, confidence intervals, p-values) and Module 6
+(coefficients, adjustment) applies to all of them at once. And it means you can always ask the
+clinically useful question, *how big is the effect, and how uncertain?*, instead of stopping at
+"the Mann–Whitney test was significant (p = 0.03)", which tells a patient nothing.
+
+## Section 2 — A continuous predictor: Pearson's r is just a slope
+
+Start with **Pearson's correlation coefficient, r.** Most people know it runs from −1 to +1; fewer know what it measures.
+
+Take two continuous variables, say each patient's **baseline BP** and their **age**. Module 6
+already taught you to fit a line, `BP = a + b × age`, where the slope `b` is in real units: mmHg per
+year. Pearson's r is *that exact same fit*, with one change: **put both variables in
+standard-deviation units first** (subtract the mean, divide by the SD — the "z-scores" from Module 2).
+
+Once both axes are measured in SDs, the slope is no longer "mmHg per year"; it is "SDs of BP per SD
+of age", a pure, unit-free number. And that number is **r**. It tells you how many SDs the outcome changes for each SD change in the predictor. In short:
+
+> **Pearson's r is the slope of the regression line when both variables are standardised.**
+
+This is why r is bounded at ±1 (a slope steeper than 1 SD-per-SD would predict more variation than
+exists), why r = 0 means a flat line, and why the p-value from a correlation test is *identical* to the
+p-value for the slope in a linear regression — they are the same test. The correlation isn't a different tool from
+regression; it's regression without the units.
+
+Drag the data below. Watch the raw slope (in mmHg/year) and r move together, and toggle
+"standardise" to see the line become r directly:
+
+<PearsonAsSlope seed={7101} />
+
+<MisconceptionCallout title="Common misconception">
+"Correlation and regression are different things." They are the same fit reported in different units: regression keeps the clinical units (mmHg per year), correlation strips them to a
+unit-free −1…+1 score. Regression is usually the more useful of the two, because "0.6 mmHg per
+year" answers a question a clinician can act on, while "r = 0.42" does not.
+</MisconceptionCallout>
+
+## Section 3 — A categorical predictor: the t-test and ANOVA are one model
+
+Module 6 showed that comparing **two** groups with a t-test is the linear model
+`outcome = a + b × treated`, where `treated` is a 0/1 dummy: `a` is the placebo mean and `b` is the
+difference. Nothing new there. The question this section answers is: what happens with **three or
+more** groups? That's the situation people reach for **ANOVA** (analysis of variance).
+
+You add more dummy columns. With our three arms (placebo, low dose,
+high dose), pick one as the **reference** (placebo) and create two 0/1 indicators:
+
+> **outcome = a + b₁ × (low dose?) + b₂ × (high dose?) + noise**
+
+- `a` (the intercept) is the **placebo mean**.
+- `b₁` is **how much low dose differs from placebo**.
+- `b₂` is **how much high dose differs from placebo**.
+
+Each patient is in exactly one arm, so for a low-dose patient the high-dose indicator is 0, and the
+model just reads off `a + b₁`. This 0/1 bookkeeping is called **dummy coding**, and it is how a categorical predictor is put into an equation built for numbers.
+
+So where is "ANOVA"? The classic one-way ANOVA F-test asks a single yes/no question: **are any of the
+group differences real, or could the whole spread of group means be chance?** In linear-model terms
+that is exactly: *are b₁ and b₂ both zero?* The ANOVA F-statistic and the F-test that the linear model reports
+for the same model are **the identical number**. ANOVA is not a separate procedure — it is the linear
+model's "is any of this predictor doing anything?" test, named in the 1920s and usually taught as a separate method.
+
+Toggle the arms on and off below and watch the dummy columns fill in, the intercept sit on the
+reference group, and each coefficient span the gap to its group mean:
+
+<DummyCodingDemo seed={7301} />
+
+<MisconceptionCallout title="Common misconception">
+"ANOVA tells you which groups differ." It doesn't. The F-test only says that at least one group differs. Which
+ones, and by how much, are the coefficients (and their confidence intervals), which the linear model reports and ANOVA does not. This is why "ANOVA was significant" should always be followed by looking at the actual group differences.
+</MisconceptionCallout>
+
+## Section 4 — Non-parametric tests: the same model, run on ranks
+
+This dial is the most surprising. The "non-parametric" tests that you're told to use
+when your data are skewed or have outliers, are not a separate family of methods. They are the linear
+models you already know, **run on the ranks of the data instead of the data itself.**
+
+A **rank transform** is simple: line the values up smallest to largest and replace each one by its
+position (1, 2, 3, …). The smallest length-of-stay becomes 1, the next becomes 2, and the patient who was an extreme outlier, pulling every mean upwards, becomes just
+"the biggest", say 60 out of 60. Ranks keep the *order* but discard the *spacing*, which is precisely
+why outliers and skew stop doing damage: an extreme value can only ever take the highest rank.
+
+Two named tests fall straight out:
+
+- **Spearman's correlation** is **Pearson's r computed on the ranks.** This is the definition, not an analogy. Rank both variables, run Section 2's standardised slope, and you have Spearman's ρ. It
+  measures *monotonic* association (does y tend to rise with x?) rather than strictly *straight-line*
+  association, which is why curves and outliers affect it less.
+- **The Mann–Whitney U test** (and its paired cousin, the **Wilcoxon signed-rank test**) is very nearly **the two-group comparison from Section 3 run on ranks**: `lm(rank(outcome) ~ group)`.
+  Rank everyone's length of stay ignoring their arm, then ask whether one arm's ranks sit
+  systematically higher. That is a t-test on ranks.
+
+Watch it happen. Below is a skewed outcome where a couple of outliers distort the raw comparison. Press "rank-transform" and the values move to their rank positions; the relationship straightens (for
+Spearman) or the groups separate cleanly (for Mann–Whitney), and the *same* linear model now fits:
+
+<RankTransformDemo seed={7401} />
+
+**Exact versus approximate.** Spearman = Pearson
+on ranks is **exact** (it's the definition). The Mann–Whitney/Wilcoxon ≈ "t-test on ranks" equivalence
+is a **very close approximation** rather than an algebraic identity. The classic rank-sum statistic and
+the linear model on ranks give all-but-identical answers for any sample size you'd actually trust, but
+they aren't computed by literally the same formula. The teaching point remains the same; there is no separate non-parametric method, just the linear model applied to ranks.
+
+<MisconceptionCallout title="Common misconception">
+"Non-parametric tests have no assumptions." They have fewer, not none, and they answer a slightly
+different question (about ranks/order, roughly the median, rather than the mean). The price of
+robustness is that you get a result in *rank* units, which is why a Mann–Whitney p-value should still
+be paired with an interpretable effect (a median difference, or the estimate from the rank model),
+never reported alone. Reaching for ranks "to be safe" when the data are actually fine just throws
+away information and power.
+</MisconceptionCallout>
+
+## Section 5 — When the outcome isn't a normal number: GLMs
+
+The last dial handles outcomes that aren't continuous bell-curved numbers at all: **yes/no** outcomes,
+**counts**, **rates**. The linear model `a + b × x` can predict any number from −∞ to +∞, which is
+fine for blood pressure but nonsense for a probability (stuck between 0 and 1) or a count (never
+negative). The fix, which you already met in Module 6, is to keep the familiar straight-line
+**linear predictor** and pass it through a **link function** that maps it onto the right scale.
+
+This is the **generalised linear model (GLM)**, and it has two parts:
+
+> **link( expected outcome ) = a + b × x** &nbsp;&nbsp;(the linear predictor — unchanged)
+
+- **Normal outcome → identity link** ("do nothing"). This is ordinary linear regression: everything in Module 6 and the sections above. The plain linear model is just the simplest GLM.
+- **Binary outcome → logit link.** This is **logistic regression** from Module 6 §5: the log-odds run
+  −∞…+∞ (so a straight line is safe), and back-transforming gives an odds ratio. So logistic regression was a GLM all along.
+- **Count outcome → log link.** This is **Poisson regression**, for things like number of exacerbations
+  per year. The log keeps predictions positive, and `exp(b)` is a **rate ratio**.
+
+Flip between the links below. The straight line in "link space" is identical each time; what changes is
+how it bends back onto the outcome scale — the same predictor, three different shapes:
+
+<LinkFunctionExplorer />
+
+<MisconceptionCallout title="Common misconception">
+"Logistic and Poisson regression are advanced, separate techniques." They are the *same* linear model
+with a different link, fitted by the same software with one extra argument (`family =` in R). If you
+understand `a + b × x` and the idea of a link that keeps predictions sensible, you understand GLMs.
+The coefficients just need back-transforming (`exp`) into the odds ratios and rate ratios that
+journals report.
+</MisconceptionCallout>
+
+## Section 6 — Summary table
+
+Every test below is the same `a + b × x`:
+
+<div className="table-wrap">
+  <table className="data-table">
+    <thead>
+      <tr><th>Named test</th><th>Predictor</th><th>Data or ranks</th><th>Link</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Pearson correlation / linear regression</td><td>continuous</td><td>data</td><td>identity</td></tr>
+      <tr><td>Spearman correlation</td><td>continuous</td><td><strong>ranks</strong></td><td>identity</td></tr>
+      <tr><td>t-test (2 groups)</td><td>categorical (1 dummy)</td><td>data</td><td>identity</td></tr>
+      <tr><td>Mann–Whitney / Wilcoxon</td><td>categorical (1 dummy)</td><td><strong>ranks</strong></td><td>identity</td></tr>
+      <tr><td>One-way ANOVA (3+ groups)</td><td>categorical (dummies)</td><td>data</td><td>identity</td></tr>
+      <tr><td>Logistic regression</td><td>any</td><td>data</td><td><strong>logit</strong></td></tr>
+      <tr><td>Poisson regression</td><td>any</td><td>data</td><td><strong>log</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+Set the three dials yourself and watch the named test (and its R command) fall out:
+
+<TestCollapseMap />
+
+Two practical benefits:
+
+1. **You never have to memorise a test-selection flowchart again.** Ask three questions: 1) what's my
+   predictor, 2) do I need ranks, 3) what kind of outcome, and the linear model tells you which classical
+   test you're implicitly running. Test-selection flowcharts encode this same table.
+2. **Every one of these tests gives you an effect size and a confidence interval**, because every one
+   is a linear model with coefficients (Module 4's machinery, Module 6's interpretation). Module 9 relies on this: don't stop at "the test was significant"; report how big the effect is and how uncertain. That is what a patient needs.
+
+> *There was never a zoo of unrelated tests. There was one model, and a century of people giving its
+> special cases different names. Variance is still king; this is just the king's whole court, finally
+> introduced as one family. Perhaps I am the Jester...*
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="Pearson correlation IS a standardised regression slope"
+  code={`x <- rnorm(50, 60, 10);  y <- 90 + 0.6 * x + rnorm(50, 0, 8)
+
+cor.test(x, y)                 # Pearson r and its p-value
+summary(lm(scale(y) ~ scale(x)))   # the 'scale(x)' coefficient == r, same p`}
+/>
+
+<CollapsibleRSnippet
+  caption="Spearman IS Pearson on the ranks"
+  code={`cor.test(x, y, method = "spearman")        # Spearman's rho
+cor.test(rank(x), rank(y))                 # Pearson on ranks: same rho
+summary(lm(rank(y) ~ rank(x)))             # ...and it's a linear model`}
+/>
+
+<CollapsibleRSnippet
+  caption="t-test and one-way ANOVA are linear models"
+  code={`group <- factor(rep(c("placebo", "low", "high"), each = 20))
+y     <- rnorm(60, mean = c(120, 116, 112)[group], sd = 15)
+
+summary(aov(y ~ group))        # the ANOVA F-test
+anova(lm(y ~ group))           # identical F-test from the linear model
+summary(lm(y ~ group))         # intercept = placebo mean; coefficients = differences`}
+/>
+
+<CollapsibleRSnippet
+  caption="Mann–Whitney is (almost exactly) a t-test on ranks"
+  code={`g2 <- factor(rep(c("placebo", "drug"), each = 30))
+los <- rexp(60, rate = 1/5)                 # skewed length-of-stay
+
+wilcox.test(los ~ g2)                        # Mann–Whitney U
+summary(lm(rank(los) ~ g2))                  # the same comparison on ranks`}
+/>
+
+<CollapsibleRSnippet
+  caption="GLMs are the linear predictor plus a link"
+  code={`# binary outcome -> logit link (logistic regression, Module 6)
+glm(controlled ~ dose, family = binomial)
+
+# count outcome -> log link (Poisson regression); exp(coef) is a rate ratio
+glm(exacerbations ~ dose, family = poisson)`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="omt-q1"
+  prompt={`Pearson's correlation r is best understood as…`}
+  options={[
+    {
+      text: `A completely different quantity from a regression slope.`,
+      correct: false,
+      feedback: `They're the same fit. r is just the slope after both variables are standardised, which is why cor.test and the lm slope give the identical p-value.`,
+    },
+    {
+      text: `The slope of the regression line when both variables are put in standard-deviation (z-score) units.`,
+      correct: true,
+      feedback: `Exactly. Standardising both axes turns "mmHg per year" into a unit-free "SDs per SD", and that number, bounded at ±1, is r.`,
+    },
+    {
+      text: `The proportion of variance explained by the model.`,
+      correct: false,
+      feedback: `That's r² (R²), a related but different number. r itself is the standardised slope, and it carries a sign.`,
+    },
+    {
+      text: `A measure that only works for categorical data.`,
+      correct: false,
+      feedback: `The opposite: Pearson's r is for two continuous variables. The categorical-predictor case is the t-test/ANOVA branch.`,
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="omt-q2"
+  prompt={`A one-way ANOVA comparing placebo, low dose and high dose is equivalent to which linear model, and what does its F-test ask?`}
+  options={[
+    {
+      text: `A model with dummy (0/1) columns for the groups; the F-test asks whether any group coefficient is non-zero.`,
+      correct: true,
+      feedback: `Dummy coding turns the categories into 0/1 predictors; the ANOVA F is exactly the linear model's "is this predictor doing anything?" test. Identical numbers.`,
+    },
+    {
+      text: `A model with the group label entered as a single continuous number 1, 2, 3.`,
+      correct: false,
+      feedback: `That would wrongly assume equal, ordered spacing between arms. Groups become separate dummy columns, not one numeric code.`,
+    },
+    {
+      text: `A fundamentally different procedure that can't be written as a linear model.`,
+      correct: false,
+      feedback: `ANOVA *is* the linear model with a categorical predictor; aov() and lm() report the same F-test.`,
+    },
+    {
+      text: `A test that tells you exactly which arms differ from each other.`,
+      correct: false,
+      feedback: `The F-test only says that at least one group differs. Which arms, and by how much, are the coefficients and their confidence intervals.`,
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="omt-q3"
+  prompt={`Why is Spearman's correlation often described as "Pearson on ranks", and when is that useful?`}
+  options={[
+    {
+      text: `Because it literally is Pearson's r computed on the ranked data; useful when the relationship is monotonic but not straight, or has outliers.`,
+      correct: true,
+      feedback: `Ranking discards spacing but keeps order, so curves and outliers stop distorting the fit. Spearman measures monotonic association.`,
+    },
+    {
+      text: `Because it measures something unrelated to regression.`,
+      correct: false,
+      feedback: `It's the same standardised-slope idea from Section 2, just applied to ranks.`,
+    },
+    {
+      text: `Because it only applies to perfectly linear relationships.`,
+      correct: false,
+      feedback: `That's Pearson on the raw data. Ranking is precisely what frees Spearman from the straight-line requirement.`,
+    },
+    {
+      text: `Because it requires the data to be normally distributed.`,
+      correct: false,
+      feedback: `The reason to rank is usually that the data aren't well-behaved; ranks sidestep the distribution.`,
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="omt-q4"
+  prompt={`A colleague says "I used a Mann–Whitney test because the data were skewed, so I've avoided the linear model entirely." The most accurate response is…`}
+  options={[
+    {
+      text: `The Mann–Whitney test is essentially the two-group linear model run on the ranks of the data, so you didn't avoid the linear model, you fed it ranks.`,
+      correct: true,
+      feedback: `Right: rank the outcome, compare the groups' ranks, and that's a t-test on ranks. Non-parametric tests are not a separate method.`,
+    },
+    {
+      text: `Correct: non-parametric tests have nothing to do with linear models.`,
+      correct: false,
+      feedback: `They're the same models on ranked data. The rank-sum test and lm(rank(y) ~ group) give all-but-identical results.`,
+    },
+    {
+      text: `Correct, and Mann–Whitney makes no assumptions at all.`,
+      correct: false,
+      feedback: `It has fewer assumptions, not none, and it answers a rank/median-flavoured question, not the same one as the mean-based test.`,
+    },
+    {
+      text: `The two methods can never agree.`,
+      correct: false,
+      feedback: `They agree very closely; that's the whole point of the equivalence (an exact identity for Spearman, a tight approximation for Mann–Whitney).`,
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="omt-q5"
+  prompt={`Logistic regression and Poisson regression differ from ordinary linear regression mainly in that they…`}
+  options={[
+    {
+      text: `Pass the same straight-line predictor (a + b × x) through a link function (logit or log) so predictions stay valid for probabilities or counts.`,
+      correct: true,
+      feedback: `That's the GLM idea: identical linear predictor, plus a link that keeps the output sensible. Ordinary regression is the identity-link case.`,
+    },
+    {
+      text: `Abandon the linear predictor and use a totally different equation.`,
+      correct: false,
+      feedback: `The linear predictor a + b × x is unchanged; only the link (and back-transform to OR or rate ratio) is added.`,
+    },
+    {
+      text: `Can only be used when the outcome is normally distributed.`,
+      correct: false,
+      feedback: `The opposite: links exist precisely so non-normal outcomes (binary, counts) fit the same framework.`,
+    },
+    {
+      text: `Require completely different software and concepts from everything in this course.`,
+      correct: false,
+      feedback: `In R it's the same fit with one extra family = argument; conceptually it's Module 6's logistic regression generalised.`,
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="omt-q6"
+  prompt={`What is the main practical payoff of knowing that these named tests are all the linear model?`}
+  options={[
+    {
+      text: `Any of them can be reported as an effect size with a confidence interval, not just a p-value, because each is a model with coefficients.`,
+      correct: true,
+      feedback: `This is the appraisal habit: every one of these tests yields "how big, how uncertain", the only version that helps a patient. Module 9 builds on exactly this.`,
+    },
+    {
+      text: `It lets you ignore assumptions because the tests are all identical.`,
+      correct: false,
+      feedback: `The equivalence doesn't remove assumptions; it just shows the shared structure. Each still needs its checks.`,
+    },
+    {
+      text: `It proves p-values are the most important output.`,
+      correct: false,
+      feedback: `If anything it does the reverse: it surfaces the coefficient and confidence interval that the named p-value tends to hide.`,
+    },
+    {
+      text: `It means you should always use the most complicated test available.`,
+      correct: false,
+      feedback: `It means the opposite: pick the dials that match your data and read the same interpretable output, without test-selection anxiety.`,
+    },
+  ]}
+/>

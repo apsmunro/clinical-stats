@@ -1,0 +1,442 @@
+import { DraggableRegression } from '../components/DraggableRegression'
+import { EquationAnatomy } from '../components/EquationAnatomy'
+import { LogOddsTransform } from '../components/LogOddsTransform'
+import { AdjustmentDemo } from '../components/AdjustmentDemo'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab (continued)**
+>
+> Using the same trial, you now want to analyse the data further. Beyond arm and final BP,
+> you also recorded each patient's **age** and **baseline BP**. Three questions Module 4's t-test
+> cannot answer: (1) Does BP rise with age in your sample, and by how much per year? (2) Your trial
+> was randomised, but your colleague's *observational* follow-up study wasn't: sicker patients
+> preferentially got the drug. How do you compare fairly? (3) For a binary endpoint like "controlled
+> BP at 12 weeks", how do you estimate an effect size? One model answers all three.
+
+## Section 1 — You've been using a linear model all along
+
+Here is Module 4's t-test, written as an equation instead of a test. **Tap each coloured part of
+the equation** to see what it means and what it does to the data:
+
+<EquationAnatomy seed={6001} />
+
+where `treated` is 0 for placebo and 1 for the drug arm. Two coefficients: `a` is the mean BP of
+the placebo group; `b` is *the difference the drug makes*, and for our trial, b = **−4 mmHg**. It gives exactly the same estimate, standard error and p-value as Module 4's t-test. A t-test is a linear model with one binary predictor. (The first R snippet at the
+bottom of this page shows this in more detail).
+
+I promised no equations, but this one is very important. If you can understand the basic machinery
+inside of the linear model, you are able to apply this to almost **all common statistical tests**
+to understand what is happening inside them. No more consulting flow charts or memorising categories,
+you can apply your understanding of *this one test* to almost all the others. Let's take a minute to
+slow down and explain each part of the equation:
+
+The left hand side starts with the result or outcome. The remainder of the equation beyond the "="
+sign explains how we are going to work it out. This is sometimes labelled as **y** (as it is usually
+plotted on the y axis).
+
+Next we have our reference point, sometimes called the "intercept" as this is where the regression
+line will "intercept" the y axis. This is where we begin when our predictor variable is set at zero.
+This can literally be zero when it is a continuous variable, or else a figurative zero when there are
+two categories and we use zero to indicate this is the reference category. This is sometimes labelled
+as **a** or alpha, or beta zero. Why? Because statisticians love Greek letters and hate making things
+obvious.
+
+Next is the effect size, called the **coefficient**. It is the expected change in your outcome for a one-unit increase in your predictor variable (or, with two groups, for moving from the reference category to the intervention category). This is usually labelled as **beta 1**.
+
+Next, we multiply our effect size (beta 1) by the unit of our predictor, or
+zero/one for whether we are in the reference category (zero) or intervention category (one). This
+predictor variable is usually labelled as **x** (as it is usually plotted on the x axis).
+
+Finally, we add in a variable for noise. This is simply to show that we don't expect our predictor
+variable or categories to perfectly explain all the variation in the outcome variable, so an extra
+variable is added to mop up all the random noise and variation added by all the other unmeasured
+things which contribute to the outcome variable. Sometimes this is labelled as **e** or epsilon.
+
+Take some time making sure you are comfortable with each part of this equation. For the reasons
+mentioned above, if you can comfortably explain what is going on in the linear model, you will have no
+difficulty understanding how all the other common statistical tests work. They are almost all
+variations of this model or special cases of how it is used.
+
+But why bother using this instead of our good old-fashioned t-test anyway? Because the equation form
+*scales* and the test form doesn't. Want age in the picture? Add `+ c × age`. Baseline BP?
+`+ d × baseline`. A dose instead of a yes/no? Let the predictor be continuous. Every extension of the
+question is one more term in the same equation, whereas the named tests (t-test, ANOVA, ANCOVA, correlation…) are all versions of this one model. Learn it once and the rest follows.
+
+## Section 2 — Lines through data: fitting by least squares
+
+That was the example of having two groups. We mentioned making the predictor continuous before, so
+let's take a look at that now. In the placebo arm, does systolic BP rise with age? Plot BP against
+age: a cloud of points with an upward drift. The linear model proposes a line:
+
+> **BP = a + b × age + noise**
+
+`a` is the intercept (BP at age 0, often a mathematical convenience rather than a clinical claim)
+and `b` is the slope: **mmHg per year of age**. If b = 0.6, two
+patients ten years apart differ by ~6 mmHg on average.
+
+Which line is *best*? For each candidate line, every point has a **residual**: the vertical gap
+between observed and predicted. This measures how much our prediction missed what the true values
+were at each point on the line. Squaring and summing the residuals gives us a quantifiable score; the
+**least-squares** line is the one with the smallest total. That's the whole fitting procedure: make the misses as small as possible. (Why *squared*? Two reasons worth knowing. Squaring punishes
+big misses disproportionately: one 10 mmHg miss costs as much as a hundred 1 mmHg misses. And it
+makes the best line a *mean-like* object, the same centre-of-mass logic as Module 2's mean, which
+is also why outliers tug on it the same way.)
+
+Your turn to be the fitting algorithm. Drag the line to chase the smallest Sum of Squared Errors (SSE)
+you can, then check yourself against the least-squares button. Then switch to *drag points* mode and pull an
+extreme-age patient far off the line. The best-fit line moves towards it: points at the edges have *leverage*.
+
+<DraggableRegression seed={3001} />
+
+One more piece of vocabulary while the residuals are on screen: their standard deviation is the
+**residual SD**, the noise left over after the model has explained what it can. It comes back in Section 6 and in Module 8.
+
+## Section 3 — Coefficients come with uncertainty (Module 4 applies)
+
+A slope estimated from 25 patients is an *estimate*, exactly as Module 4's −4 mmHg was. Re-run the
+study and the fitted slope wobbles. Try the **"Re-sample 25 patients"** button above after showing
+the least-squares fit, and watch the fitted slope change with each fresh sample. A coefficient has
+a **sampling distribution**, hence a **standard error**, hence a **95% CI** and a **p-value**. All
+of Module 4's machinery applies to every coefficient in any regression, unchanged:
+
+- *"b = 0.6, 95% CI (0.2 to 1.0)"*: the range of slopes compatible with the data. It excludes 0,
+  so age and BP are associated beyond plausible chance.
+- The p-value for a coefficient tests against a null hypothesis for the coefficient; "true coefficient = 0",
+  i.e. *this predictor adds nothing*, and carries every caveat from Module 4 (it is not the probability
+  the predictor matters, significance is not importance, and a CI is more informative than a star).
+
+Nothing in this section is new. That's the point: Module 4 taught inference for one number;
+regression produces several numbers, each following the same rules. (And if you'd rather have
+posterior distributions for coefficients instead, Module 5 applies wholesale too. Same model,
+either inferential lens.)
+
+## Section 4 — Adjustment: comparing like with like
+
+Now we will look at where understanding the nuts and bolts becomes particularly important in
+clinical reading.
+
+Your colleague runs an **observational** study of Snakeoilizumab: no randomisation, because
+clinicians prescribed it to whoever they judged needed it. Unsurprisingly, treated patients started
+*sicker* (higher baseline severity). At follow-up, the crude comparison shows: **treated
+patients did no better, maybe worse, than untreated.** Does the drug fail outside trials?
+
+Severity is a **confounder**: it pushed patients *into* treatment and *also* worsened
+their outcomes. The crude comparison mixes the drug's effect with the severity gap between the
+groups. The fix is the equation form from Section 1:
+
+> **outcome = a + b × treated + c × severity + noise**
+
+Adding severity to the model asks a sharper question: *among patients of the same severity, what
+does treatment change?* The coefficient "b" is now the **adjusted** treatment effect.
+
+See it happen. The simulation below builds in a true drug benefit of −4 mmHg, then lets severity
+drive prescribing. Without adjustment, the drug looks useless. Turn on adjustment to compare like with like. Then drag the confounding-strength slider to zero and notice crude ≈ adjusted: *that is what randomisation achieves.*
+
+<AdjustmentDemo seed={6006} />
+
+Three caveats, because adjustment is often over-trusted:
+
+- **You can only adjust for what you measured.** Unmeasured confounding survives any number of
+  covariates. ("We adjusted for everything" means "everything we thought of and recorded.")
+- **Adjustment does not prove causation.** It compares like with like *on the included
+  variables*, under the model's assumptions. Randomisation (Module 4) balances *everything*,
+  measured and unmeasured, which is why it remains the gold standard and why this course keeps
+  repeating "causation comes from design, not analysis."
+- **Adjusting for the wrong thing can hurt.** Adjusting for a variable on the causal path (a
+  mediator), or for a consequence of treatment, can *create* bias rather than remove it. The rule
+  of thumb at this level: adjust for pre-treatment confounders, not post-treatment variables.
+
+<MisconceptionCallout title="Common misconception">
+"The study adjusted for 15 variables, so the association is probably causal." Adjustment is only as
+good as the list, and the list never includes what nobody measured (or imagined). A heavily
+adjusted observational estimate is still an observational estimate. Even if you think you have
+adjusted for every prognostic variable, there can still be large amounts of residual confounding due
+to errors in how these were measured, misclassified, etc. Design (randomisation) removes
+confounding; adjustment merely *models* the part of it you caught.
+</MisconceptionCallout>
+
+Adjustment also helps in **randomised** trials. Adjusting for baseline BP doesn't fix confounding (randomisation already did); it **reduces unexplained variation**, shrinking the residual SD and narrowing the CI for the treatment effect. This is essentially a free way of reducing
+the uncertainty in your estimate. Remember Module 8's option 2 for the unaffordable sample size,
+*reduce the variance*? This is the analysis-side version of that lever.
+
+## Section 5 — How to estimate effect sizes for binary outcomes
+
+A binary outcome ("controlled BP at 12 weeks": yes/no) can't sit raw on the left of a linear
+equation, because predictions must stay between 0% and 100%. You can't have a probability of
+a fixed outcome that is more than 1 or less than zero, this breaks the maths and is nonsense.
+The solution is to change the scale:
+**logistic regression** models the *log-odds* of the outcome:
+
+> **log-odds(controlled) = a + b × treated + c × severity + …**
+
+Same right-hand side, same adjustment logic, same coefficient machinery (SEs, CIs, p-values:
+Module 4 again). The only novelty is the **scale of the coefficients**: back-transformed, `exp(b)`
+is an **odds ratio (OR)**, the multiplicative change in the odds of the outcome with treatment.
+The simple way to think of it: taking the log-odds transforms probabilities of 0 and 1 to minus infinity and infinity. This turns a scale with fixed ends into one with no ends, so a straight line can be fitted to it.
+
+<LogOddsTransform />
+
+Suppose 40% of placebo patients achieve control versus 55% on treatment (the worked example
+Module 8 will size a study around; the smallest such difference worth caring about is what
+Module 8 will name the **MCID**, the number every sample-size calculation should be anchored to).
+The same comparison can be expressed three ways:
+
+- **Risk difference**: 15 percentage points. The absolute measure; drives NNT (≈ 1/0.15 ≈ 7) and
+  powers sample-size maths.
+- **Risk ratio**: 0.55/0.40 ≈ 1.4, i.e. "40% more likely to achieve control". Intuitive, but not
+  what logistic regression outputs.
+- **Odds ratio**: (0.55/0.45)/(0.40/0.60) ≈ 1.8. This is what logistic regression *does* output,
+  and the one journals are full of.
+
+<MisconceptionCallout title="Common misconception">
+"An odds ratio of 1.8 means patients are 1.8× as likely to achieve control." That's the *risk
+ratio* reading, and here the RR is 1.4, not 1.8. ORs exaggerate relative to RRs whenever the
+outcome is common (ours is ~50%!); they approximate RRs only for rare outcomes. When you read
+"OR = 1.8", reach for the baseline risk before translating it into anything a patient would
+recognise, and notice the absolute difference (15 points) is the number that drives clinical
+decisions and sample sizes alike.
+</MisconceptionCallout>
+
+(If you want to play with the three measures, the binary mode of Module 8's sample-size calculator
+interconverts them live.)
+
+## Section 6 — Assumptions, residuals and variance
+
+Every model reaches its conclusions using assumptions. The linear model's, in plain language and in
+rough order of how much they matter:
+
+1. **Independence.** Patients' errors don't influence each other. The most important, and the hardest to check from plots (clustered data such as wards or repeated measures need extended models, the
+   "clustering" Module 8 warns about in sample-size planning).
+2. **Linearity.** The relationship is adequately straight over the observed range. Check:
+   residuals-vs-fitted plot. Fix: transformations or curves, same family.
+3. **Constant variance** (homoscedasticity). Noise is similar across the range, e.g., residuals
+   aren't smaller when your predictors are smaller and larger when they are larger, etc.
+4. **Normal residuals.** *Least important, most worried-about.* Note carefully: the assumption is
+   about **residuals**, being normally distributed around the regression line, not the raw outcome,
+   itself being normally distributed. With decent sample sizes the central limit theorem (Module 4) makes coefficient inference robust to non-normality anyway.
+
+<MisconceptionCallout title="Common misconception">
+"My outcome variable isn't normally distributed, so I can't use a linear model." The model never
+required the *outcome* to be normal, only the residuals, approximately, and even that softens with
+n. Skewed outcomes often yield perfectly well-behaved residuals once predictors are in the model.
+Check the residual plot, not the outcome histogram.
+</MisconceptionCallout>
+
+One of the important things about the assumptions, is that they are almost never all met perfectly
+in any model. For example, there is almost nothing in biology that meets the assumption of a
+linear relationship — things usually fit more of an "S shaped" curve. However, we can accept that
+the linear model is almost always wrong, but almost always good enough to be useful. In fact, it is very useful for such a simple model. Don't get too hung up over the
+assumptions unless something is clearly grossly violated. Even then the situation may be salvageable.
+
+To summarise: the **residual SD** is the variation the model couldn't explain. It is *the* SD in Module 4's standard error, the SD that widened every
+sampling distribution, and the SD in Module 8's sample-size formula. Good covariates shrink it; sloppy
+measurement inflates it. A measure you may have heard of, **R²** ("share of variance explained")
+is related and worth checking, but a model can have a low R² and still estimate a
+treatment effect precisely, and a high R² proves nothing about causation. The residual SD, not R²,
+is what feeds back into design.
+
+> *Variance is king. The linear model explains what variation it can, and what's left (the residual) determines how precise every estimate will be.*
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="The reveal: t-test and linear model are the same test"
+  code={`set.seed(1)
+treated <- rep(c(0, 1), each = 40)
+bp      <- rnorm(80, mean = 120 - 4 * treated, sd = 15)
+
+t.test(bp ~ treated, var.equal = TRUE)   # difference, CI, p
+summary(lm(bp ~ treated))                # same estimate, same SE, same p
+# the 'treated' coefficient IS the difference in means`}
+/>
+
+<CollapsibleRSnippet
+  caption="A continuous predictor: slope in real units"
+  code={`age <- runif(25, 40, 80)
+bp  <- 90 + 0.6 * age + rnorm(25, sd = 10)
+
+fit <- lm(bp ~ age)
+summary(fit)        # slope ~0.6 mmHg per year, with SE, CI, p
+confint(fit)
+plot(age, bp); abline(fit, col = "red")`}
+/>
+
+<CollapsibleRSnippet
+  caption="Adjustment: crude vs adjusted treatment effect (confounding by indication)"
+  code={`set.seed(42)
+n         <- 120
+severity  <- runif(n, 0, 10)
+treated   <- rbinom(n, 1, plogis(severity - 5))  # sicker -> more often treated
+bp_change <- -4 * treated + 1.5 * severity + rnorm(n, sd = 4)
+# true drug effect: -4 mmHg; severity makes BP fall less (or rise)
+
+coef(lm(bp_change ~ treated))             # crude: ~0, drug looks useless
+coef(lm(bp_change ~ treated + severity))  # adjusted: ~ -4 mmHg recovered`}
+/>
+
+<CollapsibleRSnippet
+  caption="Binary outcomes: logistic regression and the odds ratio"
+  code={`controlled <- rbinom(n, 1, plogis(-0.4 + 0.6 * treated))
+fit <- glm(controlled ~ treated, family = binomial)
+
+exp(coef(fit))["treated"]     # odds ratio
+exp(confint(fit))             # 95% CI for the OR
+# absolute risks are still the clinical currency:
+tapply(controlled, treated, mean)`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m6-q1"
+  prompt="In the model final BP = a + b × treated (treated = 0 or 1), the coefficient b is…"
+  options={[
+    {
+      text: 'The mean BP of the placebo group.',
+      correct: false,
+      feedback: 'That’s the intercept a: the model’s prediction when treated = 0.',
+    },
+    {
+      text: 'The difference in mean BP between drug and placebo: exactly what Module 4’s t-test estimated.',
+      correct: true,
+      feedback:
+        'With a 0/1 predictor, a is the placebo mean and b is the between-group difference: same estimate, SE and p-value as the t-test, because a t-test IS this model.',
+    },
+    {
+      text: 'The correlation between treatment and BP.',
+      correct: false,
+      feedback:
+        'Correlation is a different (unitless) quantity. The coefficient b is in mmHg: a difference in means.',
+    },
+    {
+      text: 'The proportion of patients who responded.',
+      correct: false,
+      feedback:
+        'The model says nothing about individual response rates. b is the average difference between arms.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m6-q2"
+  prompt="A regression of BP on age gives a slope of 0.6 (95% CI 0.2 to 1.0). The best reading is…"
+  options={[
+    {
+      text: 'Each extra year of age is associated with ~0.6 mmHg higher BP, with plausible values 0.2–1.0; chance alone is an unlikely explanation.',
+      correct: true,
+      feedback:
+        'It gives the units and the interval, and says "associated with", not "causes".',
+    },
+    {
+      text: 'Age causes a 0.6 mmHg rise per year.',
+      correct: false,
+      feedback:
+        'That assumes causation, which comes from design, not from a slope. These are observational data.',
+    },
+    {
+      text: '60% of BP is explained by age.',
+      correct: false,
+      feedback: 'That confuses the slope with R²: different numbers answering different questions.',
+    },
+    {
+      text: 'Older patients always have higher BP.',
+      correct: false,
+      feedback:
+        'An average trend is not a rule about individuals. The residuals are the individuals disagreeing with the line.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m6-q3"
+  prompt="In the observational study, the crude analysis shows no drug benefit, but adjusting for baseline severity reveals one. The most likely explanation is…"
+  options={[
+    {
+      text: 'The adjusted analysis is p-hacking.',
+      correct: false,
+      feedback:
+        'Pre-specified adjustment for a known confounder is the opposite of p-hacking. It’s the analysis the design demands.',
+    },
+    {
+      text: 'Sicker patients were preferentially treated, so the crude comparison mixed the drug’s benefit with the severity penalty: classic confounding by indication.',
+      correct: true,
+      feedback:
+        'Severity pushed patients into treatment AND worsened outcomes, masking the benefit in the crude contrast; comparing like with like unmasks it.',
+    },
+    {
+      text: 'The drug only works in sick patients.',
+      correct: false,
+      feedback:
+        'That’s an interaction (effect modification) claim, and nothing here tested it. Adjustment asks a different question: the same effect, compared within severity levels.',
+    },
+    {
+      text: 'Randomisation failed.',
+      correct: false,
+      feedback:
+        'There was no randomisation. That’s precisely why confounding could occur; a randomised trial wouldn’t have needed rescuing.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m6-q4"
+  prompt="An observational paper reports an odds ratio of 1.8 (adjusted for 15 covariates) for an outcome occurring in ~50% of controls. Which caution is most apt?"
+  options={[
+    {
+      text: 'With 15 covariates, residual confounding is impossible, so this is causal.',
+      correct: false,
+      feedback:
+        'No covariate list covers the unmeasured. Adjustment is only as good as what was recorded and imagined.',
+    },
+    {
+      text: 'The OR overstates the risk ratio for a common outcome, and adjustment only handles measured confounders, so neither "1.8× as likely" nor "causal" is licensed.',
+      correct: true,
+      feedback:
+        'Both traps in one sentence: OR ≠ RR when the outcome is common (the RR here would be much closer to 1), and a heavily adjusted observational estimate is still observational.',
+    },
+    {
+      text: 'An OR cannot be computed for common outcomes.',
+      correct: false,
+      feedback:
+        'ORs are computable at any prevalence; they just DIVERGE from risk ratios as the outcome gets common, which is exactly the trap.',
+    },
+    {
+      text: 'The result is invalid because outcomes must be normally distributed.',
+      correct: false,
+      feedback:
+        'That imports a garbled assumption from the wrong model. Even in linear regression, the (soft) normality assumption concerns residuals, not outcomes.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m6-q5"
+  prompt="In a randomised trial, adding baseline BP as a covariate to the model mainly serves to…"
+  options={[
+    {
+      text: 'Correct the confounding that randomisation left behind.',
+      correct: false,
+      feedback:
+        'Randomisation already balances confounders in expectation. That isn’t the covariate’s job here.',
+    },
+    {
+      text: 'Reduce residual variance, tightening the CI around the treatment effect: the analysis-side version of Module 8’s "reduce the variance" lever.',
+      correct: true,
+      feedback:
+        'The covariate soaks up outcome noise, shrinking the residual SD and hence the SE. That’s why pre-specified covariate adjustment is standard in trial analysis plans.',
+    },
+    {
+      text: 'Increase the sample size.',
+      correct: false,
+      feedback:
+        'n is fixed; precision is what improves. (The effect is similar to adding patients, which is why it’s worth doing.)',
+    },
+    {
+      text: 'Turn the trial into an observational study.',
+      correct: false,
+      feedback: 'Nothing about the design changed, only the precision of the analysis.',
+    },
+  ]}
+/>

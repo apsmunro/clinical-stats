@@ -1,0 +1,380 @@
+﻿import { LongRunFrequencyDemo } from '../components/LongRunFrequencyDemo'
+import { FlavourClassifier } from '../components/FlavourClassifier'
+import { SpotTheFakeDemo } from '../components/SpotTheFakeDemo'
+import { TransposedConditionalDemo } from '../components/TransposedConditionalDemo'
+import { MisconceptionCallout } from '../components/MisconceptionCallout'
+import { SelfCheckQuestion } from '../components/SelfCheckQuestion'
+import { CollapsibleRSnippet } from '../components/CollapsibleRSnippet'
+
+> **The running case — Snakeoilizumab (continued)**
+>
+> There is still no trial, but the planning meeting has started. Someone says: *"I reckon there's maybe a
+> 30% chance this drug really works."* Someone else objects: *"That's not a probability. Either it
+> works or it doesn't."* Without realising it, they are using two different meanings of "probability".
+
+## Section 1 — Why this matters in practice
+
+It is tempting to file *"what does probability actually mean?"* under philosophy: academically interesting,
+but safe to skip. I promise you it is not! This is one of the most practical questions in the whole course,
+so let's walk through why.
+
+**Every number a clinical study hands you as a result is written in the language of probability.**
+When you read a p-value, a confidence interval, a *"significant"* result, or a hazard ratio with its confidence interval, each one is a probability statement: the result **is** the probability. If you don't know what that probability means, you don't know what your result means.
+
+One of the most common errors in evidence-based medicine is reading
+a probability of one philosophy as though it were the other: hearing *"the probability of data this
+extreme if the drug does nothing is 3%"* and concluding *"there's a 97% chance the drug works."*
+Those are different sentences with different meanings, and confusing them has led to ineffective treatments being adopted and effective ones being abandoned.
+
+The fix is conceptual, not mathematical: learn that "probability" has two meanings, and learn to recognise which one is being used. That is what this module covers.
+
+## Section 2 — One word, two meanings
+
+The following three sentences all use the same word:
+
+1. *"This coin has a 50% **probability** of heads."*
+2. *"In this programme, the **probability** that a positive screen is a true positive is 8%."*
+3. *"There's a 30% **probability** this patient's chest pain is cardiac."*
+
+Sentences 1 and 2 describe **repeatable situations**: flip the coin a thousand times, screen a
+thousand patients, and the probability is just the proportion you'd see in the long run. You could,
+in principle, *check it by counting*.
+
+Sentence 3 is different in kind. This patient's pain is cardiac or it isn't; there's no population
+of identical chest-pains to count. The 30% is not a property of the world; it measures *your* **uncertainty**, given what you know. And yet it's not arbitrary. It should move
+with evidence (an abnormal ECG should raise it), and a clinician whose 30%s come true about 30% of
+the time is obviously doing something right!
+
+Both meanings are coherent and useful, but they are not the same:
+
+- **Frequentist probability**: a property of the *world*, the long-run frequency of an outcome
+  under repetition.
+- **Bayesian probability**: a property of *your knowledge*, a degree of belief about a fact,
+  updated as evidence arrives.
+
+Make sure you are comfortable with the above definitions, as they are important for the remainder of the module and the course.
+
+Practise telling the two apart on the statements below:
+
+<FlavourClassifier />
+
+## Section 3 — The long run (and how short the short run is)
+
+The **law of large numbers** explains many features of frequentist statistics: as repetitions increase, the observed proportion gets closer to the true probability. The catch is that this happens **slowly**, and early results can be misleading.
+
+Below, a patient either responds to treatment or doesn't, and *you* set the truth for how often!
+Observe ten patients at a time and watch the observed rate jump around; then observe a thousand and watch it settle:
+
+<LongRunFrequencyDemo seed={333} defaultP={0.5} />
+
+Three things to take from playing with it:
+
+1. **Small samples vary a lot.** Ten patients routinely yield response rates of 20% or 80% when
+   the truth is 50%. Nothing went wrong, that *is* randomness. Remember this, as it's important for
+   Module 4's sampling variation and Module 8's case for adequate sample sizes.
+2. **The truth emerges slowly.** The wobble at n = 100 is still visible; the law only applies in the long run, and most clinical studies are small.
+3. **Streaks happen.** Five responders in a row is not a miracle or a sign the drug is working. At p = 0.5 it is common.
+
+## Section 4 — Two common errors of intuition
+
+People readily see patterns, including ones that aren't there. Two errors matter clinically:
+
+- **The gambler's fallacy**: *"four non-responders in a row; the next one's bound to respond."*
+  No. Independent events are not affected by what came before. Each patient's probability is unchanged by what happens to other patients.
+- **Cluster blindness**: randomness *looks* clumpy. Genuinely random sequences contain streaks and
+  clusters that look deliberate. Truly "even-looking" sequences are the suspicious ones. Three MIs on
+  one ward in a week, a run of treatment successes, a "cancer cluster" in one postcode: each *may*
+  mean something, but this is also what chance produces routinely, and you cannot tell which by eye. Statistics can.
+
+Try it. One of these two wards saw genuinely random outcomes; the other was made
+up by a human trying to look random. Pick the real one:
+
+<SpotTheFakeDemo />
+
+Guided experiment: set the truth to 0.5 in the long-run demo above, observe 100 patients, and read
+off the longest streak. Then ask yourself what the ward would say about a run that long.
+
+<MisconceptionCallout title="Common misconception">
+"After five heads, tails is due." Independent flips don't compensate; the coin doesn't know its
+history. What *is* true: in the long run the proportion settles, not because future flips correct
+the past, but because the past gets **diluted**. Five extra heads vanish inside ten thousand flips;
+they are never "paid back".
+</MisconceptionCallout>
+
+## Section 5 — Why both philosophies are important
+
+If the Bayesian meaning handles one-off facts so naturally, why does most of medical statistics run
+on the frequentist one? And if frequentist methods rule the journals, why does this course include Module 5?
+It's important to understand that **the two philosophies answer different questions in different ways**.
+
+- The **frequentist** asks: *"How would this procedure behave over many repetitions?"* It refuses
+  to assign probabilities to one-off facts. That's the price of objectivity in this philosophy:
+  no prior beliefs enter, so the answer is the same for every analyst. Its natural
+  products are statements about **procedures**. It imagines, "what would I expect if I repeated this
+  study again, and again, and again", and provides all its answers in this imaginary context.
+- The **Bayesian** asks: *"Given everything I know, what should I believe about this fact?"* It
+  happily assigns probabilities to one-off statements ("70% that the drug works") at the price of
+  declaring where the starting beliefs came from (We will address these prior beliefs, or "priors",
+  in Module 5).
+
+So when the planning meeting argued about "a 30% chance the drug really works", both were right:
+that sentence is meaningless as a long-run frequency (this drug works or it doesn't), and perfectly
+meaningful as a calibrated degree of belief. Most common misreadings of p-values come from mixing up these two meanings.
+
+Frequentist analysis traditionally tells us the probability (p) of the observed data (d) if the null
+hypothesis is assumed to be true (H0). We can write this as p(data | H0).
+
+Bayesian analysis flips the inside of this equation around to give you the probability (p) of a
+hypothesis (H) given the data you have observed. We can write this as p(H | data). Don't worry if this
+seems confusing, we will build on it more below.
+
+To see why the order matters so much, take the same 1000 trials and ask each question in turn.
+Group the trials by the *truth* and a block reads out P(result | truth), the forward direction a
+p-value reports. Regroup the identical trials by *result* and the same picture now reads out
+P(truth | result), the answer you actually wanted. The two numbers can be very different, mainly depending on how common effective drugs are:
+
+<TransposedConditionalDemo />
+
+During the course we will look at both philosophies in more detail: Module 4 builds the frequentist machinery,
+then Module 5 shows what the Bayesian philosophy can say that the frequentist may not, and what it costs.
+
+<MisconceptionCallout title="Reviewer's lens" variant="lens">
+When a paper (or a colleague) makes a probability claim, ask: **which philosophy is this, and which
+philosophy is the listener about to hear?** "95% confidence" (frequentist, about the procedure) is
+reliably heard as "95% probability it's true" (Bayesian, about the fact). The gap between what's
+said and what's heard is where much confusion arises.
+</MisconceptionCallout>
+
+## Section 6 — A short history: why p-values answer the reverse question
+
+If the Bayesian question — *given the data, what should I believe about the drug?* — is the more intuitive
+one that clinicians actually ask, you might wonder why the statistics in your journals so rarely answer it.
+The reason is partly philosophical and partly practical, and the practical reason matters most.
+
+**Bayes came first.** The Reverend Thomas Bayes wrote down the rule for updating belief with evidence
+in the eighteenth century (it was published after his death, in 1763). Laplace took the idea, developed it, and spent much of the nineteenth century using it to reason about everything from the
+masses of planets to the ratio of male to female births. For a hundred years this was simply how
+quantitative inference was done; they called it **inverse probability** — reasoning backwards from
+the data you saw to the cause that produced it. That *is* P(hypothesis | data).
+
+**Frequentism arrived in the 1920s and 30s**, largely as a reaction against this. Ronald Fisher gave us
+significance tests and the p-value; Jerzy Neyman and Egon Pearson built the hypothesis-testing
+framework with Type I and Type II errors, and the confidence interval. They distrusted inverse
+probability because it seemed to require a **prior**, using your existing knowledge and beliefs,
+and a prior seemed to bring personal opinion into what was meant to be objective science.
+So they rebuilt inference to need no prior at all. That is a real intellectual achievement,
+and it is why frequentist methods promise the same answer to every analyst.
+
+There was also a practical reason frequentism took over:
+
+<MisconceptionCallout title="It was the only thing you could realistically compute" variant="note">
+To get the intuitive answer, P(hypothesis | data), Bayes' theorem makes you average over a prior.
+This means for any realistic problem, solving a mathematical integral with no closed form. In 1925,
+with pen, paper, and a book of printed tables, that integral was simply **not solvable**.
+What *was* solvable was the other conditional: assume the null hypothesis is exactly true, work
+out the distribution of the data it predicts, and read a tail area off a t-table or a z-table.
+That quantity — **P(data this extreme | H₀ true)** — needs only one fixed hypothesis and a single
+distribution. It is the p-value, and its main advantage in 1925 was that it could be calculated by hand.
+</MisconceptionCallout>
+
+This is the origin of the famous **transposed conditional**. You want P(H | D) — the probability
+the hypothesis is true given your data. What a frequentist test gives you is P(D | H₀) — the
+probability of data like yours *if a specified hypothesis, usually the null, were true*.
+These are the same letters in the opposite order, and they are not interchangeable, any more than
+*"probability of a rash given measles"* equals *"probability of measles given a rash."* Statistics standardised on this reversed question not because it is the one we care about, but because in the pencil-and-tables era it was the one we could **answer**. This is a major reason statistics feels unintuitive. To be fair, the approach works remarkably well given how simple its tools were.
+
+**Then computers removed the constraint.** From the 1990s, cheap computers and simulation methods e.g., Markov
+chain Monte Carlo and its relatives, made it possible to *approximate* those once-impossible
+integrals to any accuracy you like, just by sampling. The intuitive answer, P(hypothesis | data),
+became something a laptop can calculate. The historical reason for preferring the p-value no longer applies.
+
+**So Bayesian methods are on the rise**, and for reasons beyond being more intuitive: they fold
+in prior evidence explicitly, handle complex hierarchical and adaptive designs, and
+deliver direct probability statements that should be more intuitive for clinicians to act on. Regulators have noticed; the FDA has
+issued guidance for Bayesian trial designs, especially for medical devices and rare diseases where
+data are scarce and using earlier evidence matters.
+
+But the shift is **slow**, mainly because of familiarity. A century of textbooks, journal conventions,
+statistics courses, and regulatory templates are built on frequentist machinery. The people reviewing the
+papers and teaching the students learned it that way; the software defaults to it; the priors still make
+some readers uneasy. None of that makes the old methods wrong, but it does mean the field is mid-transition,
+comfortable with one approach and still learning the other. Which is exactly why a clinician today needs **both**.
+
+<MisconceptionCallout title="Reviewer's lens" variant="lens">
+When you meet a p-value, remember why it exists: it was the one conditional that could be computed by hand in 1925. It answers *"how surprising is my data if nothing is going on?"*. This is a perfectly real
+question, but rarely the one you walked in with. Wanting P(hypothesis | data) is the right instinct.
+It just needs a prior and a computer.
+</MisconceptionCallout>
+
+## Optional R code
+
+<CollapsibleRSnippet
+  caption="Watch the long run arrive (the widget in six lines)"
+  code={`set.seed(3)
+p        <- 0.5                       # the truth
+patients <- rbinom(1000, 1, p)        # 1 = responded
+running  <- cumsum(patients) / seq_along(patients)
+
+plot(running, type = "l", ylim = c(0, 1),
+     xlab = "Patients so far", ylab = "Observed response rate")
+abline(h = p, lty = 2, col = "red")
+running[10];  running[100];  running[1000]   # wild -> wobbly -> settled`}
+/>
+
+<CollapsibleRSnippet
+  caption="Streaks are common in fair sequences"
+  code={`set.seed(7)
+flips <- sample(c("R", "N"), 100, replace = TRUE)   # responder / non-responder
+paste(flips, collapse = "")
+max(rle(flips)$lengths)    # longest streak in 100 fair 'patients' - often 6+`}
+/>
+
+## Self-check
+
+<SelfCheckQuestion
+  id="m3-q1"
+  prompt={'"In this screening programme, 8% of positive tests are true positives." Which philosophy of probability is this, and why?'}
+  options={[
+    {
+      text: 'Bayesian: it’s a belief about each patient.',
+      correct: false,
+      feedback:
+        'That names the CONVERTED use (applying the 8% to the patient in front of you, the move Module 5 formalises), not the programme-level claim itself.',
+    },
+    {
+      text: 'Frequentist: it’s a long-run proportion in a repeatable process, checkable by counting.',
+      correct: true,
+      feedback:
+        'A screening programme repeats the same test thousands of times: count true positives among positives over thousands of screens and you MEASURE this number.',
+    },
+    {
+      text: 'Neither: percentages aren’t probabilities.',
+      correct: false,
+      feedback: 'Percentages are just probabilities × 100. The question is what the probability means.',
+    },
+    {
+      text: 'Both, always and equally.',
+      correct: false,
+      feedback:
+        'That blurs the very distinction this module exists to draw. The two meanings license different sentences.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m3-q2"
+  prompt="A drug has a true response rate of 50%. The ward has just seen four non-responders in a row. The probability the next patient responds is…"
+  options={[
+    {
+      text: 'Much higher than 50%: a response is overdue.',
+      correct: false,
+      feedback: 'The gambler’s fallacy: independent outcomes are not affected by earlier ones.',
+    },
+    {
+      text: 'Much lower than 50%: the drug is clearly failing.',
+      correct: false,
+      feedback:
+        'The mirror-image error. A four-streak is routine at p = 0.5; check the streak counter in the widget.',
+    },
+    {
+      text: 'Still 50%: independent outcomes have no memory.',
+      correct: true,
+      feedback: 'Independence means each patient’s probability is untouched by the run before them.',
+    },
+    {
+      text: 'Exactly 100%: five failures in a row is impossible.',
+      correct: false,
+      feedback:
+        'Runs of five happen about three times per hundred patients. Your ward will see them regularly.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m3-q3"
+  prompt="In the long-run demo with the truth set to 0.5, you observe 10 patients and get an 80% response rate. The best reading is…"
+  options={[
+    {
+      text: 'The slider is broken: 80% is too far from 50%.',
+      correct: false,
+      feedback: 'That blames the tool for natural randomness. 8/10 is deep inside the wild zone for n = 10.',
+    },
+    {
+      text: 'Small samples routinely produce estimates this wild; the long-run guarantee says nothing useful about n = 10.',
+      correct: true,
+      feedback:
+        'A result as lopsided as 8-or-more of one kind out of 10 turns up about one fair run in nine, and SOME extreme-looking result happens constantly. This is the seed of Modules 4 and 8. Small studies often produce convincing-looking but wrong results.',
+    },
+    {
+      text: 'The true probability has changed to 0.8.',
+      correct: false,
+      feedback: 'That over-updates from 10 data points: the streak-proves-change error from Section 4.',
+    },
+    {
+      text: 'The next 10 patients will compensate with a low rate.',
+      correct: false,
+      feedback:
+        'This is the gambler’s fallacy again. The past gets diluted, never paid back.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m3-q4"
+  prompt={'"There is a 95% probability that this specific confidence interval contains the true effect." From this module’s standpoint, what’s wrong?'}
+  options={[
+    {
+      text: 'Nothing: that’s what 95% means.',
+      correct: false,
+      feedback: 'This is the classic misreading. Module 4 takes it apart in detail.',
+    },
+    {
+      text: 'The number should be 90%.',
+      correct: false,
+      feedback: "The number isn’t the problem; the philosophy is.",
+    },
+    {
+      text: "It reads a frequentist statement about a procedure's long-run behaviour as a Bayesian statement about one specific interval: a philosophy switch.",
+      correct: true,
+      feedback:
+        '"95% confidence" is a promise about the RECIPE over many studies. Once your one interval exists, assigning it a probability is a degree-of-belief statement the frequentist framework deliberately declines to make. Covered in more detail in Module 5.',
+    },
+    {
+      text: 'Probabilities can never describe intervals.',
+      correct: false,
+      feedback:
+        'Over-correction: credible intervals (Module 5) carry exactly such probabilities, legitimately.',
+    },
+  ]}
+/>
+
+<SelfCheckQuestion
+  id="m3-q5"
+  prompt="Why did twentieth-century clinical statistics standardise on P(data | hypothesis) — the p-value — rather than the P(hypothesis | data) clinicians actually want?"
+  options={[
+    {
+      text: 'Because P(data | hypothesis) is the question doctors are really asking.',
+      correct: false,
+      feedback:
+        'It’s the reverse: P(hypothesis | data) is what you walk in wanting. The p-value answers a different, narrower question — "how surprising is this data if nothing is going on?"',
+    },
+    {
+      text: 'Because P(hypothesis | data) had been proven mathematically invalid.',
+      correct: false,
+      feedback:
+        'It’s just Bayes’ theorem, and it long predates frequentism — the obstacle was never validity.',
+    },
+    {
+      text: 'Because P(data | hypothesis) needs only one assumed hypothesis and a single distribution, so it was calculable by hand from printed tables; the Bayesian answer required an intractable integral.',
+      correct: true,
+      feedback:
+        'Assume H₀, derive the distribution it predicts, read a tail area off a t-table. P(hypothesis | data) needs averaging over a prior — an integral no one could solve with pencil and paper in 1925. The transposed conditional won on computability, not on relevance.',
+    },
+    {
+      text: 'Because computers in the 1920s favoured Bayesian arithmetic.',
+      correct: false,
+      feedback:
+        'There were no computers in the 1920s — that’s the whole point. The shift toward Bayesian methods only became feasible from the 1990s, once simulation could approximate those integrals.',
+    },
+  ]}
+/>
