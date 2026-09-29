@@ -1,5 +1,6 @@
 import { Suspense, useMemo, useState } from 'react'
 import { Link, NavLink, Route, Routes, useParams } from 'react-router-dom'
+import { FeedbackButton } from './components/FeedbackButton'
 import { ModuleLayout, isModuleDone } from './components/ModuleLayout'
 import { moduleBySlug, modules } from './content/modules'
 import { useTheme } from './theme/ThemeContext'
@@ -295,7 +296,9 @@ export default function App() {
       <footer className="app__footer">
         Research Education Program — Clinical Statistics. Concept-first, code-optional. All
         trials simulated; no actual Snakeoilizumab was harmed.
+        <span className="app__footer-version">Version {__APP_VERSION__}</span>
       </footer>
+      <FeedbackButton />
     </div>
   )
 }

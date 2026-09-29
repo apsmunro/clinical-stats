@@ -270,6 +270,49 @@ pre {
   font-size: 0.85rem;
   padding: var(--s-6);
   border-top: 1px solid var(--border);
+  /* room so the floating feedback button never covers the footer text */
+  padding-bottom: calc(var(--s-6) + 3.5rem);
+}
+.app__footer-version {
+  display: block;
+  margin-top: var(--s-2);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- pilot feedback button ---------- */
+
+.feedback-fab {
+  position: fixed;
+  right: var(--s-4);
+  bottom: var(--s-4);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-contrast);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.feedback-fab:hover {
+  background: var(--primary-hover);
+}
+.feedback-fab:active {
+  transform: translateY(1px);
+}
+@media print {
+  .feedback-fab {
+    display: none;
+  }
 }
 
 /* ---------- ink hero ---------- */

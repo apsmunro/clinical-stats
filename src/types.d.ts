@@ -1,3 +1,6 @@
+// Build stamp injected by vite.config.ts (`define`).
+declare const __APP_VERSION__: string
+
 // Untyped third-party chart modules (we use the basic Plotly distribution,
 // which ships without TypeScript types).
 declare module 'plotly.js-basic-dist-min'
