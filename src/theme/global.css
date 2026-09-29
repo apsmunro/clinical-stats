@@ -766,6 +766,29 @@ pre {
   font-weight: 600;
 }
 
+/* pilot end-of-module check-in card */
+.checkin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-4) var(--s-5);
+  background: var(--primary-tint);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+}
+.checkin__title {
+  margin: 0;
+  font-weight: 600;
+}
+.checkin__text {
+  margin: var(--s-1) 0 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
 /* ---------- widgets (cards) ---------- */
 
 .widget {

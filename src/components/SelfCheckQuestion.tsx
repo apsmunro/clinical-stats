@@ -1,7 +1,8 @@
 /**
  * SelfCheckQuestion — single-best-answer MCQ with per-option feedback.
  * No scoring or login; a correct answer is remembered in localStorage so
- * learners can see which self-checks they have already done.
+ * learners can see which self-checks they have already done, and whether the
+ * first pick was right is kept for the pilot check-in form (ModuleCheckIn).
  */
 import { useMemo, useState } from 'react'
 
@@ -27,11 +28,34 @@ function hash(s: string): string {
 
 const STORE_KEY = 'csc-selfcheck-done'
 
+// Whether the learner's FIRST ever pick on each question was correct — kept
+// for the pilot check-in form, so hard or ambiguous questions show up.
+const FIRST_TRY_KEY = 'csc-selfcheck-first-try'
+
 function loadDone(): Record<string, boolean> {
   try {
     return JSON.parse(localStorage.getItem(STORE_KEY) ?? '{}')
   } catch {
     return {}
+  }
+}
+
+export function loadFirstTry(): Record<string, boolean> {
+  try {
+    return JSON.parse(localStorage.getItem(FIRST_TRY_KEY) ?? '{}')
+  } catch {
+    return {}
+  }
+}
+
+function recordFirstTry(qid: string, correct: boolean) {
+  try {
+    const all = loadFirstTry()
+    if (qid in all) return
+    all[qid] = correct
+    localStorage.setItem(FIRST_TRY_KEY, JSON.stringify(all))
+  } catch {
+    /* private mode — fine */
   }
 }
 
@@ -42,6 +66,7 @@ export function SelfCheckQuestion({ prompt, options, id }: SelfCheckQuestionProp
 
   const choose = (i: number) => {
     setSelected(i)
+    recordFirstTry(qid, options[i].correct)
     if (options[i].correct) {
       setDone(true)
       try {
@@ -57,7 +82,7 @@ export function SelfCheckQuestion({ prompt, options, id }: SelfCheckQuestionProp
   const letters = 'ABCDEFGH'
 
   return (
-    <div className="self-check">
+    <div className="self-check" data-qid={qid}>
       <div className="self-check__prompt">
         <span className="self-check__tag">Self-check{done ? ' ✓' : ''}</span>
         <p>{prompt}</p>

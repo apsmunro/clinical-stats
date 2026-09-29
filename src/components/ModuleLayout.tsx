@@ -6,6 +6,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { neighbours, type ModuleMeta } from '../content/modules'
+import { ModuleCheckIn } from './ModuleCheckIn'
 
 const STORE_KEY = 'csc-modules-done'
 
@@ -56,6 +57,7 @@ export function ModuleLayout({ module: mod, children }: { module: ModuleMeta; ch
       <div className="module__content module-prose">{children}</div>
 
       <footer className="module__footer">
+        <ModuleCheckIn module={mod} />
         <label className="checkbox checkbox--complete">
           <input type="checkbox" checked={done} onChange={(e) => toggleDone(e.target.checked)} />
           Mark this module as complete
